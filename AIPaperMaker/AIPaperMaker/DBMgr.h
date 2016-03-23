@@ -23,5 +23,19 @@ public:
 		TCHAR * szExaminationQuestion,
 		TCHAR* szAnswerA, TCHAR* szAnswerB, TCHAR* szAnswerC, TCHAR* szAnswerD,
 		int &nRightAnswer);
+
+private:
+	int CreateTable_Subject();
 };
+
+
+/**
+ * database design
+ * 
+ * table : subject
+ *
+ * ×Ö¶Î£ºid, difficulty_degree, question_type, examination_question, answerA, answerB, answerC, answerD, right_answer
+ * ÀàÐÍ£ºint		int				int					nchar
+ *	
+**/
 
