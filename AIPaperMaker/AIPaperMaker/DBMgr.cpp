@@ -5,9 +5,8 @@
 
 CDBMgr::CDBMgr()
 {
-	//CreateTable_Subject();
-	AddSubject(6, 1, _T("10鐨勯樁涔樻槸澶氬皯?"), _T("100"), _T("10000"), _T("5050"), _T("3628800"), 4);
-
+	CreateTable_Subject();
+	AddSubject(6, 1, _T("10的阶乘是多少?"), _T("100"), _T("10000"), _T("5050"), _T("3628800"), 4);
 }
 
 
@@ -26,7 +25,7 @@ int CDBMgr::CreateTable_Subject()
 	}
 
 	TCHAR szSql[] = _T("CREATE TABLE `subject` (\
-		  `id` int(10), \
+		  `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \
 		  `difficulty_degree` int(2) NOT NULL DEFAULT 0,\
 		  `question_type` int(2) NOT NULL DEFAULT 0,\
 		  `examination_question` varchar(4096) NOT NULL DEFAULT '',\
@@ -35,8 +34,8 @@ int CDBMgr::CreateTable_Subject()
 		  `answerC` varchar(4096) NOT NULL DEFAULT '',\
 		  `answerD` varchar(4096) NOT NULL DEFAULT '',\
 		  `right_answer` int(2) NOT NULL DEFAULT 0,\
-		  `timestamp` datetime DEFAULT (datetime('now', 'localtime')), \
-		  PRIMARY KEY (`id`));");
+		  `timestamp` datetime DEFAULT (datetime('now', 'localtime'))\
+		  );");
 
 	nRet = mgr.ExcuteSQL(szSql);
 	if(nRet != 0)
@@ -62,10 +61,11 @@ int CDBMgr::AddSubject(int nDifficultyDegree, int nQuestionType,
 		return nRet;
 	}
 
-	TCHAR szSql[] = _T("INSERT into subject(\
-  		difficulty_degree, question_type, examination_question,\
-  		answerA, answerB, answerC, answerD, right_answer) \
-		VALUES(%d, %d, '%s', '%s', '%s', '%s', '%s', %d);");
+	TCHAR szSql[1024] = { 0 };
+	
+	_stprintf_s(szSql, sizeof(szSql) / sizeof(szSql[0]),
+		_T("INSERT into subject(difficulty_degree, question_type, examination_question,answerA, answerB, answerC, answerD, right_answer) VALUES(%d, %d, '%s', '%s', '%s', '%s', '%s', %d);"),
+		nDifficultyDegree, nQuestionType, szExaminationQuestion, szAnswerA, szAnswerB, szAnswerC, szAnswerD, nRightAnswer);
 
 	nRet = mgr.ExcuteSQL(szSql);
 	if(nRet != 0)
