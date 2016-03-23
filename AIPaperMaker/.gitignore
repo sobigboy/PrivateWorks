@@ -2,3 +2,5 @@
 *.sdf
 *.aps
 
+/Bin
+/Build
