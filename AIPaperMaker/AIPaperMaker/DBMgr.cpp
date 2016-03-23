@@ -23,21 +23,24 @@ int CDBMgr::CreateTable_Subject()
 		return nRet;
 	}
 
-	TCHAR szSql[] = _T("CREATE TABLE [subject] (\
-		  [id] int(10), \
-		  [difficulty_degree] int(2) NOT NULL DEFAULT 0,\
-		  [question_type] int(2) NOT NULL DEFAULT 0,\
-		  [examination_question] char(4096) NOT NULL DEFAULT '',\
-		  [answerA] char(4096) NOT NULL DEFAULT '',\
-		  [answerA] char(4096) NOT NULL DEFAULT '',\
-		  [answerA] char(4096) NOT NULL DEFAULT '',\
-		  [answerA] char(4096) NOT NULL DEFAULT '',\
-		  [right_answer] int(2) NOT NULL DEFAULT 0,\
-		  [timestamp] datetime DEFAULT (datetime('now', 'localtime')), \
-		  CONSTRAINT [sqlite_autoindex_alarm_1] PRIMARY KEY ([id]));");
+	TCHAR szSql[] = _T("CREATE TABLE `subject` (\
+		  `id` int(10), \
+		  `difficulty_degree` int(2) NOT NULL DEFAULT 0,\
+		  `question_type` int(2) NOT NULL DEFAULT 0,\
+		  `examination_question` varchar(4096) NOT NULL DEFAULT '',\
+		  `answerA` varchar(4096) NOT NULL DEFAULT '',\
+		  `answerB` varchar(4096) NOT NULL DEFAULT '',\
+		  `answerC` varchar(4096) NOT NULL DEFAULT '',\
+		  `answerD` varchar(4096) NOT NULL DEFAULT '',\
+		  `right_answer` int(2) NOT NULL DEFAULT 0,\
+		  `timestamp` datetime DEFAULT (datetime('now', 'localtime')), \
+		  PRIMARY KEY (`id`));");
 
 	nRet = mgr.ExcuteSQL(szSql);
-
+	if(nRet != 0)
+	{
+		printf("ExcuteSQL(): exec create table sql failed\n");
+	}
 
 	mgr.CloseDBA();
 
