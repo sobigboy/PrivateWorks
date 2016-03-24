@@ -78,3 +78,77 @@ int CDBMgr::AddSubject(int nDifficultyDegree, int nQuestionType,
 	return nRet;
 }
 
+int CDBMgr::GetSubjectByID(int nID, SUBJECT_T &stSuject)
+{
+	CComnDBAMgr mgr;
+	int nRet = mgr.OpenDBA();
+	if(nRet != 0)
+	{
+		printf("GetSubjectByID(): open db failed\n");
+		return nRet;
+	}
+
+	TCHAR szSql[256] = { 0 };
+	_stprintf_s(szSql, sizeof(szSql) / sizeof(szSql[0]),
+		_T("select * from subject where id=%d ;"), nID);
+
+	mgr.InitSelectTask();
+	nRet = mgr.SelectSQL(szSql);
+	mgr.MoveToFirst();
+
+	assert(nRet == 1);
+
+	for(int i = 0; i < nRet; i++)
+	{
+		stSuject.nDifficultyDegree = mgr.GetFieldAsInt32(_T("difficulty_degree"));
+		stSuject.nQuestionType = mgr.GetFieldAsInt32(_T("question_type"));
+		stSuject.nRightAnswer = mgr.GetFieldAsInt32(_T("right_answer"));
+
+		int nSizeInWords = sizeof(stSuject.szExaminationQuestion) / sizeof(stSuject.szExaminationQuestion[0]);
+
+		mgr.GetFieldAsString(_T("examination_question"), stSuject.szExaminationQuestion, nSizeInWords);
+		mgr.GetFieldAsString(_T("answerA"), stSuject.szAnswerA, nSizeInWords);
+		mgr.GetFieldAsString(_T("answerB"), stSuject.szAnswerB, nSizeInWords);
+		mgr.GetFieldAsString(_T("answerC"), stSuject.szAnswerC, nSizeInWords);
+		mgr.GetFieldAsString(_T("answerD"), stSuject.szAnswerD, nSizeInWords);
+
+	}
+
+
+	mgr.CloseDBA();
+
+	return nRet;
+}
+
+int CDBMgr::CheckAnswer(int nID, USER_ANSWER_T &stUserAnswer)
+{
+	SUBJECT_T stSuject = { 0 };
+
+	GetSubjectByID(nID, stSuject);
+
+	assert(stUserAnswer.nID == stSuject.nQuestionType.nID &&
+		stUserAnswer.nQuestionType == stSuject.nQuestionType);
+
+	if(stSuject.nQuestionType == QUESTION_TYPE_SELECTION)
+	{
+		if(stUserAnser.nUserSelection == stSuject.nRightAnswer)
+			return 4;
+		else
+			return 0;
+	}
+	else if(stSuject.nQuestionType == QUESTION_TYPE_FILL)
+	{
+		int nGoat = 0;
+		//字符串比较 计算得分
+
+	}
+	else
+	{
+		return -1;
+	}
+
+	return 0;
+}
+
+
+
