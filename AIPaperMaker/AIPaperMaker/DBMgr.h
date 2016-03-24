@@ -56,6 +56,9 @@ public:
 
 private:
 	int CreateTable_Subject();
+
+	//just for test
+	int AddTestQuestion();
 };
 
 // check answer

@@ -6,6 +6,8 @@
 CDBMgr::CDBMgr()
 {
 	CreateTable_Subject();
+	//AddTestQuestion();
+
 }
 
 CDBMgr::~CDBMgr()
@@ -182,6 +184,22 @@ int CDBMgr::CheckAnswer(USER_ANSWER_T &stUserAnswer)
 	}
 
 	return nScore;
+}
+
+int CDBMgr::AddTestQuestion()
+{
+	SUBJECT_T subject = { 0 };
+
+	subject.nDifficultyDegree = 1;
+	subject.nQuestionType = 1;
+	_stprintf_s(subject.szExaminationQuestion, MAX_SUBJECT_STRING_LEN, _T("%s"), _T("question : test question?"));
+	_stprintf_s(subject.szAnswerA, MAX_SUBJECT_STRING_LEN, _T("%s"), _T("answer : a"));
+	_stprintf_s(subject.szAnswerB, MAX_SUBJECT_STRING_LEN, _T("%s"), _T("answer : b"));
+	_stprintf_s(subject.szAnswerC, MAX_SUBJECT_STRING_LEN, _T("%s"), _T("right answer : c"));
+	_stprintf_s(subject.szAnswerD, MAX_SUBJECT_STRING_LEN, _T("%s"), _T("answer : d"));
+	subject.nRightAnswer = 3;
+
+	return AddSubject(subject);
 }
 
 
