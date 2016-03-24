@@ -3,6 +3,8 @@
 *.aps
 *.tags
 *.tags_sorted_by_file
+*.opensdf
 
 /Bin
 /Build
+/ipch
