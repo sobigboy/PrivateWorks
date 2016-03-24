@@ -46,6 +46,35 @@ int CDBMgr::CreateTable_Subject()
 	return nRet;
 }
 
+int CDBMgr::AddSubject(SUBJECT_T &stSubject)
+{
+
+	CComnDBAMgr mgr;
+	int nRet = mgr.OpenDBA();
+	if(nRet != 0)
+	{
+		printf("AddSubject(): open db failed\n");
+		return nRet;
+	}
+
+	TCHAR szSql[1024] = { 0 };
+	
+	_stprintf_s(szSql, sizeof(szSql) / sizeof(szSql[0]),
+		_T("INSERT into subject(difficulty_degree, question_type, examination_question,answerA, answerB, answerC, answerD, right_answer) VALUES(%d, %d, '%s', '%s', '%s', '%s', '%s', %d);"),
+		stSubject.nDifficultyDegree, stSubject.nQuestionType, stSubject.szExaminationQuestion, 
+		stSubject.szAnswerA, stSubject.szAnswerB, stSubject.szAnswerC, stSubject.szAnswerD, stSubject.nRightAnswer);
+
+	nRet = mgr.ExcuteSQL(szSql);
+	if(nRet != 0)
+	{
+		printf("ExcuteSQL(): exec add subject sql failed\n");
+	}
+
+	mgr.CloseDBA();
+
+	return nRet;
+}
+
 int CDBMgr::AddSubject(int nDifficultyDegree, int nQuestionType,
 		TCHAR * szExaminationQuestion, 
 		TCHAR* szAnswerA, TCHAR* szAnswerB, TCHAR* szAnswerC, TCHAR* szAnswerD,
@@ -76,7 +105,7 @@ int CDBMgr::AddSubject(int nDifficultyDegree, int nQuestionType,
 	return nRet;
 }
 
-int CDBMgr::GetSubjectByID(int nID, SUBJECT_T &stSuject)
+int CDBMgr::GetSubjectByID(int nID, SUBJECT_T &stSubject)
 {
 	CComnDBAMgr mgr;
 	int nRet = mgr.OpenDBA();
@@ -96,21 +125,21 @@ int CDBMgr::GetSubjectByID(int nID, SUBJECT_T &stSuject)
 
 	assert(nRet == 1);
 
-	stSuject.nSubjectID = nID;
+	stSubject.nSubjectID = nID;
 
 	for(int i = 0; i < nRet; i++)
 	{
-		stSuject.nDifficultyDegree = mgr.GetFieldAsInt32(_T("difficulty_degree"));
-		stSuject.nQuestionType = mgr.GetFieldAsInt32(_T("question_type"));
-		stSuject.nRightAnswer = mgr.GetFieldAsInt32(_T("right_answer"));
+		stSubject.nDifficultyDegree = mgr.GetFieldAsInt32(_T("difficulty_degree"));
+		stSubject.nQuestionType = mgr.GetFieldAsInt32(_T("question_type"));
+		stSubject.nRightAnswer = mgr.GetFieldAsInt32(_T("right_answer"));
 
-		int nSizeInWords = sizeof(stSuject.szExaminationQuestion) / sizeof(stSuject.szExaminationQuestion[0]);
+		int nSizeInWords = sizeof(stSubject.szExaminationQuestion) / sizeof(stSubject.szExaminationQuestion[0]);
 
-		mgr.GetFieldAsString(_T("examination_question"), stSuject.szExaminationQuestion, nSizeInWords);
-		mgr.GetFieldAsString(_T("answerA"), stSuject.szAnswerA, nSizeInWords);
-		mgr.GetFieldAsString(_T("answerB"), stSuject.szAnswerB, nSizeInWords);
-		mgr.GetFieldAsString(_T("answerC"), stSuject.szAnswerC, nSizeInWords);
-		mgr.GetFieldAsString(_T("answerD"), stSuject.szAnswerD, nSizeInWords);
+		mgr.GetFieldAsString(_T("examination_question"), stSubject.szExaminationQuestion, nSizeInWords);
+		mgr.GetFieldAsString(_T("answerA"), stSubject.szAnswerA, nSizeInWords);
+		mgr.GetFieldAsString(_T("answerB"), stSubject.szAnswerB, nSizeInWords);
+		mgr.GetFieldAsString(_T("answerC"), stSubject.szAnswerC, nSizeInWords);
+		mgr.GetFieldAsString(_T("answerD"), stSubject.szAnswerD, nSizeInWords);
 
 	}
 

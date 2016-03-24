@@ -47,6 +47,7 @@ public:
 		TCHAR* szAnswerA, TCHAR* szAnswerB, TCHAR* szAnswerC, TCHAR* szAnswerD,
 		int nRightAnswer);
 
+	int AddSubject(SUBJECT_T &stSubject);
 	int DeleteSubjectByID(int nID);
 
 	int GetSubjectByID(int nID, SUBJECT_T &stSuject);
@@ -65,7 +66,7 @@ private:
  * table : subject
  *
  * 字段：id, difficulty_degree, question_type, examination_question, answerA, answerB, answerC, answerD, right_answer
- * 类型：int		int				int					varchar
+ * 类型：int		int				int					varchar			varchar	 varchar  varchar  varchar   varchar
  *	
 **/
 
