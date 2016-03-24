@@ -6,9 +6,7 @@
 CDBMgr::CDBMgr()
 {
 	CreateTable_Subject();
-	AddSubject(6, 1, _T("10的阶乘是多少?"), _T("100"), _T("10000"), _T("5050"), _T("3628800"), 4);
 }
-
 
 CDBMgr::~CDBMgr()
 {
@@ -98,6 +96,8 @@ int CDBMgr::GetSubjectByID(int nID, SUBJECT_T &stSuject)
 
 	assert(nRet == 1);
 
+	stSuject.nSubjectID = nID;
+
 	for(int i = 0; i < nRet; i++)
 	{
 		stSuject.nDifficultyDegree = mgr.GetFieldAsInt32(_T("difficulty_degree"));
@@ -114,40 +114,45 @@ int CDBMgr::GetSubjectByID(int nID, SUBJECT_T &stSuject)
 
 	}
 
-
 	mgr.CloseDBA();
 
 	return nRet;
 }
 
-int CDBMgr::CheckAnswer(int nID, USER_ANSWER_T &stUserAnswer)
+int CDBMgr::CheckAnswer(USER_ANSWER_T &stUserAnswer)
 {
-	SUBJECT_T stSuject = { 0 };
+	SUBJECT_T stSubject = { 0 };
+	int nScore = 0;
 
-	GetSubjectByID(nID, stSuject);
+	GetSubjectByID(stUserAnswer.nSubjectID, stSubject);
 
-	assert(stUserAnswer.nID == stSuject.nQuestionType.nID &&
-		stUserAnswer.nQuestionType == stSuject.nQuestionType);
+	//assert(stUserAnswer.nQuestionType == stSubject.nQuestionType);
 
-	if(stSuject.nQuestionType == QUESTION_TYPE_SELECTION)
+	if(stSubject.nQuestionType == QUESTION_TYPE_SELECTION)
 	{
-		if(stUserAnser.nUserSelection == stSuject.nRightAnswer)
-			return 4;
+		if (stUserAnswer.nUserSelection == stSubject.nRightAnswer)
+			nScore = 4;
 		else
-			return 0;
+			nScore = 0;
 	}
-	else if(stSuject.nQuestionType == QUESTION_TYPE_FILL)
+	else if(stSubject.nQuestionType == QUESTION_TYPE_FILL)
 	{
-		int nGoat = 0;
 		//字符串比较 计算得分
-
+		if (StrCmp(stSubject.szAnswerA, stUserAnswer.szUserAnswerA) == 0)
+			nScore++;
+		if (StrCmp(stSubject.szAnswerB, stUserAnswer.szUserAnswerB) == 0)
+			nScore++;
+		if (StrCmp(stSubject.szAnswerC, stUserAnswer.szUserAnswerC) == 0)
+			nScore++;
+		if (StrCmp(stSubject.szAnswerD, stUserAnswer.szUserAnswerD) == 0)
+			nScore++;
 	}
 	else
 	{
-		return -1;
+		nScore = -1;
 	}
 
-	return 0;
+	return nScore;
 }
 
 

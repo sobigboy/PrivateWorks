@@ -51,7 +51,7 @@ public:
 
 	int GetSubjectByID(int nID, SUBJECT_T &stSuject);
 
-	int CheckAnswer(int nID, USER_ANSWER_T &stUserAnswer);
+	int CheckAnswer(USER_ANSWER_T &stUserAnswer);
 
 private:
 	int CreateTable_Subject();
