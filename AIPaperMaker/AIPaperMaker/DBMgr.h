@@ -1,36 +1,7 @@
 #pragma once
 
 #include "CommonDBA.h"
-
-#define MAX_SUBJECT_STRING_LEN	(4096)
-
-#define QUESTION_TYPE_SELECTION	(1)
-#define QUESTION_TYPE_FILL	(2)
-
-typedef struct _user_answer_t
-{
-	int nSubjectID;
-	int nDifficultyDegree;
-	int nQuestionType;
-	TCHAR szUserAnswerA[MAX_SUBJECT_STRING_LEN];
-	TCHAR szUserAnswerB[MAX_SUBJECT_STRING_LEN];
-	TCHAR szUserAnswerC[MAX_SUBJECT_STRING_LEN];
-	TCHAR szUserAnswerD[MAX_SUBJECT_STRING_LEN];
-	int nUserSelection;
-}USER_ANSWER_T;
-
-typedef struct _subject_t
-{
-	int nSubjectID;
-	int nDifficultyDegree;
-	int nQuestionType;
-	TCHAR szExaminationQuestion[MAX_SUBJECT_STRING_LEN];
-	TCHAR szAnswerA[MAX_SUBJECT_STRING_LEN];
-	TCHAR szAnswerB[MAX_SUBJECT_STRING_LEN];
-	TCHAR szAnswerC[MAX_SUBJECT_STRING_LEN];
-	TCHAR szAnswerD[MAX_SUBJECT_STRING_LEN];
-	int	nRightAnswer;
-}SUBJECT_T;
+#include "BasedataDefine.h"
 
 class CDBMgr
 {
@@ -42,17 +13,20 @@ public:
 	/*
 	* @nDifficultyDegree : 难度系数
 	*/
-	int AddSubject(/*int nID, */int nDifficultyDegree, int nQuestionType,
+	int AddSubject(int nDifficultyDegree, int nQuestionType,
 		TCHAR * szExaminationQuestion, 
 		TCHAR* szAnswerA, TCHAR* szAnswerB, TCHAR* szAnswerC, TCHAR* szAnswerD,
 		int nRightAnswer);
 
 	int AddSubject(SUBJECT_T &stSubject);
-	int DeleteSubjectByID(int nID);
-
 	int GetSubjectByID(int nID, SUBJECT_T &stSuject);
-
 	int CheckAnswer(USER_ANSWER_T &stUserAnswer);
+
+	int AddSubject(SUBJECT_CST &stSubjectCS);
+	int GetSubjectByID(int nID, SUBJECT_CST &stSubjectCS);
+	int CheckAnswer(USER_ANSWER_CST &stUserAnswerCS);
+
+	int DeleteSubjectByID(int nID);
 
 private:
 	int CreateTable_Subject();

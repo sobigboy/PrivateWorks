@@ -107,6 +107,14 @@ int CDBMgr::AddSubject(int nDifficultyDegree, int nQuestionType,
 	return nRet;
 }
 
+int CDBMgr::AddSubject(SUBJECT_CST &stSubjectCS)
+{
+	SUBJECT_T stSubject = { 0 };
+	stSubject = stSubjectCS;
+
+	return AddSubject(stSubject);
+}
+
 int CDBMgr::GetSubjectByID(int nID, SUBJECT_T &stSubject)
 {
 	CComnDBAMgr mgr;
@@ -150,6 +158,25 @@ int CDBMgr::GetSubjectByID(int nID, SUBJECT_T &stSubject)
 	return nRet;
 }
 
+int CDBMgr::GetSubjectByID(int nID, SUBJECT_CST &stSubjectCS)
+{
+	int nRet = 0;
+	SUBJECT_T stSubject = { 0 };
+	
+	nRet = GetSubjectByID(nID, stSubject);
+
+	stSubjectCS.nSubjectID = stSubject.nSubjectID;
+	stSubjectCS.nDifficultyDegree = stSubject.nDifficultyDegree;
+	stSubjectCS.nQuestionType = stSubject.nQuestionType;
+	stSubjectCS.szExaminationQuestion = stSubject.szExaminationQuestion;
+	stSubjectCS.szAnswerA = stSubject.szAnswerA;
+	stSubjectCS.szAnswerB = stSubject.szAnswerB;
+	stSubjectCS.szAnswerC = stSubject.szAnswerC;
+	stSubjectCS.szAnswerD = stSubject.szAnswerD;
+	stSubjectCS.nRightAnswer = stSubject.nRightAnswer;
+	return nRet;
+}
+
 int CDBMgr::CheckAnswer(USER_ANSWER_T &stUserAnswer)
 {
 	SUBJECT_T stSubject = { 0 };
@@ -157,7 +184,7 @@ int CDBMgr::CheckAnswer(USER_ANSWER_T &stUserAnswer)
 
 	GetSubjectByID(stUserAnswer.nSubjectID, stSubject);
 
-	//assert(stUserAnswer.nQuestionType == stSubject.nQuestionType);
+	assert(stUserAnswer.nQuestionType == stSubject.nQuestionType);
 
 	if(stSubject.nQuestionType == QUESTION_TYPE_SELECTION)
 	{
@@ -184,6 +211,14 @@ int CDBMgr::CheckAnswer(USER_ANSWER_T &stUserAnswer)
 	}
 
 	return nScore;
+}
+
+int CDBMgr::CheckAnswer(USER_ANSWER_CST &stUserAnswerCS)
+{
+	USER_ANSWER_T stUserAnswer = { 0 };
+	stUserAnswer = stUserAnswerCS;
+
+	return CheckAnswer(stUserAnswer);
 }
 
 int CDBMgr::AddTestQuestion()

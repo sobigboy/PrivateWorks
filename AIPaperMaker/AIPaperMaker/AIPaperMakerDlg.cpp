@@ -7,6 +7,7 @@
 #include "AIPaperMakerDlg.h"
 #include "afxdialogex.h"
 #include "DBMgr.h"
+#include "SubjectUI.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -98,8 +99,18 @@ BOOL CAIPaperMakerDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
 	// TODO:  在此添加额外的初始化代码
+	int nRet = 0;
+	SUBJECT_CST subcs = { 0 };
 
 	CDBMgr mgr;
+	mgr.GetSubjectByID(3, subcs);
+
+	CSubjectUI ui(&subcs,  e_display_subject);
+
+	if (IDOK == ui.DoModal())
+	{
+	}
+
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }

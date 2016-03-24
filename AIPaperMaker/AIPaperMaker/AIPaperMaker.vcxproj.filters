@@ -16,6 +16,9 @@
     <Filter Include="DBMgr">
       <UniqueIdentifier>{a65ac370-09bb-4572-b8b9-4203470a0e60}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{eb6aa70b-fcb1-4ab3-a1f5-5f25ab0c18d4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -42,6 +45,12 @@
     <ClInclude Include="DBMgr.h">
       <Filter>DBMgr</Filter>
     </ClInclude>
+    <ClInclude Include="SubjectUI.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="BasedataDefine.h">
+      <Filter>DBMgr</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AIPaperMaker.cpp">
@@ -55,6 +64,9 @@
     </ClCompile>
     <ClCompile Include="DBMgr.cpp">
       <Filter>DBMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="SubjectUI.cpp">
+      <Filter>UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

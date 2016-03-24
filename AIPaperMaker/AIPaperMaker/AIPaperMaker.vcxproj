@@ -119,10 +119,12 @@ xcopy DBMgr\*.dll ..\Bin\$(Configuration) /s/y</Command>
   <ItemGroup>
     <ClInclude Include="AIPaperMaker.h" />
     <ClInclude Include="AIPaperMakerDlg.h" />
+    <ClInclude Include="BasedataDefine.h" />
     <ClInclude Include="DBMgr.h" />
     <ClInclude Include="DBMgr\CommonDBA.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="SubjectUI.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
@@ -133,6 +135,7 @@ xcopy DBMgr\*.dll ..\Bin\$(Configuration) /s/y</Command>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="SubjectUI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="AIPaperMaker.rc" />
@@ -146,4 +149,9 @@ xcopy DBMgr\*.dll ..\Bin\$(Configuration) /s/y</Command>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="AIPaperMaker.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>
