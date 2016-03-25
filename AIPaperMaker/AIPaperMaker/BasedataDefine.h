@@ -5,6 +5,13 @@
 #define QUESTION_TYPE_SELECTION	(0)
 #define QUESTION_TYPE_FILL	(1)
 
+typedef enum e_status
+{
+	e_add_subject = 0,
+	e_display_subject,
+	e_answer_subject
+}E_STATUS;
+
 typedef struct _subject_cst
 {
 	int nSubjectID;
@@ -21,8 +28,6 @@ typedef struct _subject_cst
 typedef struct _user_answer_cst
 {
 	int nSubjectID;
-	int nDifficultyDegree;
-	int nQuestionType;
 	CString szUserAnswerA;
 	CString szUserAnswerB;
 	CString szUserAnswerC;
@@ -44,8 +49,6 @@ typedef struct _user_answer_t
 	_user_answer_t* operator = (_user_answer_cst &cs)
 	{
 		nSubjectID = cs.nSubjectID;
-		nDifficultyDegree = cs.nDifficultyDegree;
-		nQuestionType = cs.nQuestionType;
 		_stprintf_s(szUserAnswerA, _T("%s"), cs.szUserAnswerA.GetString());
 		_stprintf_s(szUserAnswerB, _T("%s"), cs.szUserAnswerB.GetString());
 		_stprintf_s(szUserAnswerC, _T("%s"), cs.szUserAnswerC.GetString());

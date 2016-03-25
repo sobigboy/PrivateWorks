@@ -132,10 +132,14 @@ int CDBMgr::GetSubjectByID(int nID, SUBJECT_T &stSubject)
 	mgr.InitSelectTask();
 	nRet = mgr.SelectSQL(szSql);
 	mgr.MoveToFirst();
+	
+	assert(nRet <= 1);
 
-	assert(nRet == 1);
+	if (nRet == 1)
+	{
+		stSubject.nSubjectID = nID;
+	}
 
-	stSubject.nSubjectID = nID;
 
 	for(int i = 0; i < nRet; i++)
 	{
@@ -228,7 +232,7 @@ int CDBMgr::DeleteSubjectByID(int nID)
 	int nRet = mgr.OpenDBA();
 	if (nRet != 0)
 	{
-		printf("GetSubjectByID(): open db failed\n");
+		printf("DeleteSubjectByID(): open db failed\n");
 		return nRet;
 	}
 
@@ -239,7 +243,7 @@ int CDBMgr::DeleteSubjectByID(int nID)
 	nRet = mgr.ExcuteSQL(szSql);
 	if (nRet != 0)
 	{
-		printf("ExcuteSQL(): delete add subject sql failed\n");
+		printf("ExcuteSQL(): delete subject sql failed\n");
 	}
 
 	mgr.CloseDBA();

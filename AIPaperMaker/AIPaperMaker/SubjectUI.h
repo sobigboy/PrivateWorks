@@ -5,13 +5,6 @@
 
 // CSubjectUI ¶Ô»°¿ò
 
-typedef enum e_status
-{
-	e_add_subject = 0,
-	e_display_subject,
-	e_answer_subject
-}E_STATUS;
-
 class CSubjectUI : public CDialogEx
 {
 	DECLARE_DYNAMIC(CSubjectUI)
@@ -35,7 +28,9 @@ protected:
 
 private:
 	void InitCtrl();
-	bool ProcessAddSubject();
+	void UpdateCheckBtn(BOOL bSaved);
+	bool CommitAddSubject();
+	bool CommitAnswerSubject();
 
 protected:
 	SUBJECT_CST* m_pstSubjectCS;

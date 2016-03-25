@@ -103,7 +103,7 @@ BOOL CAIPaperMakerDlg::OnInitDialog()
 	SUBJECT_CST subcs = { 0 };
 
 	CDBMgr mgr;
-	mgr.GetSubjectByID(3, subcs);
+	mgr.GetSubjectByID(1, subcs);
 
 	CSubjectUI ui(&subcs,  e_display_subject);
 
