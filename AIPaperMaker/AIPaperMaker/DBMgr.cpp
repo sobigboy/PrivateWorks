@@ -221,6 +221,31 @@ int CDBMgr::CheckAnswer(USER_ANSWER_CST &stUserAnswerCS)
 	return CheckAnswer(stUserAnswer);
 }
 
+
+int CDBMgr::DeleteSubjectByID(int nID)
+{
+	CComnDBAMgr mgr;
+	int nRet = mgr.OpenDBA();
+	if (nRet != 0)
+	{
+		printf("GetSubjectByID(): open db failed\n");
+		return nRet;
+	}
+
+	TCHAR szSql[256] = { 0 };
+	_stprintf_s(szSql, sizeof(szSql) / sizeof(szSql[0]),
+		_T("delete  from subject where id=%d ;"), nID);
+
+	nRet = mgr.ExcuteSQL(szSql);
+	if (nRet != 0)
+	{
+		printf("ExcuteSQL(): delete add subject sql failed\n");
+	}
+
+	mgr.CloseDBA();
+	return nRet;
+}
+
 int CDBMgr::AddTestQuestion()
 {
 	SUBJECT_T subject = { 0 };
