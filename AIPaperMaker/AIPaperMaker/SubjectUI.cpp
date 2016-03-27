@@ -5,11 +5,13 @@
 #include "AIPaperMaker.h"
 #include "SubjectUI.h"
 #include "afxdialogex.h"
-
+#include "AIPaperMakerDlg.h"
 
 // CSubjectUI 对话框
 
 IMPLEMENT_DYNAMIC(CSubjectUI, CDialogEx)
+
+#define ID_TIMER_DURATION	(20001)
 
 CSubjectUI::CSubjectUI(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CSubjectUI::IDD, pParent)
@@ -33,14 +35,10 @@ void CSubjectUI::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CHECK3, m_btnAnsC);
 	DDX_Control(pDX, IDC_CHECK4, m_btnAnsD);
 
-	if (!m_pstUserAnswerCS || !m_pstSubjectCS)
-		return;
-
-	DDX_Text(pDX, IDC_EDIT_TITLE, m_pstSubjectCS->szExaminationQuestion);
 	DDX_CBIndex(pDX, IDC_COMBO_DIF_DEGREE, m_pstSubjectCS->nDifficultyDegree);
 	DDX_CBIndex(pDX, IDC_COMBO_QUESTION_TYPE, m_pstSubjectCS->nQuestionType);
 
-	//添加题库 || 展示题库
+	DDX_Text(pDX, IDC_EDIT_TITLE, m_pstSubjectCS->szExaminationQuestion);
 
 	if (m_enumStatus == e_answer_subject && m_pstSubjectCS->nQuestionType == QUESTION_TYPE_FILL)
 	{
@@ -57,6 +55,8 @@ void CSubjectUI::DoDataExchange(CDataExchange* pDX)
 		DDX_Text(pDX, IDC_EDIT_ANS_D, m_pstSubjectCS->szAnswerD);
 	}
 
+	DDX_Control(pDX, IDC_STATIC_DURATION, m_staticDuration);
+	DDX_Control(pDX, IDC_STATIC_DUR_FLAG, m_staticDurFlag);
 }
 
 
@@ -65,28 +65,18 @@ BEGIN_MESSAGE_MAP(CSubjectUI, CDialogEx)
 	ON_CBN_SELCHANGE(IDC_COMBO_QUESTION_TYPE, &CSubjectUI::OnCbnSelchangeComboQuestionType)
 	ON_BN_CLICKED(ID_NEXTSUB, &CSubjectUI::OnBnClickedNextsub)
 	ON_BN_CLICKED(ID_PRESUB, &CSubjectUI::OnBnClickedPresub)
+	ON_WM_TIMER()
+	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 void CSubjectUI::OnBnClickedOk()
 {
-
 	bool bRet = true;
-	switch (m_enumStatus)
-	{
-	case e_display_subject:
-		break;
-	case e_add_subject:
-		bRet = CommitAddSubject();
-		break;
-	case e_answer_subject:
-		bRet = CommitAnswerSubject();
-		break;
-	default:
-		break;
-	}
-
+	bRet = Commit();
 	if (!bRet)
 		return;
+
+	::PostMessage(m_pParentWnd->GetSafeHwnd(), WM_MESSAGE_COMMIT_PAPER, 0, 0);
 
 	CDialogEx::OnOK();
 }
@@ -94,7 +84,7 @@ void CSubjectUI::OnBnClickedOk()
 BOOL CSubjectUI::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
-
+	SetTimer(ID_TIMER_DURATION, 1000, NULL);
 	InitCtrl();
 
 	return TRUE; 
@@ -107,7 +97,6 @@ void CSubjectUI::SetMode(E_STATUS eMode, SUBJECT_CST* pstSubjectCS, USER_ANSWER_
 	if (m_enumStatus == e_display_subject ||
 		m_enumStatus == e_add_subject)
 	{
-		pstSubjectCS = new SUBJECT_CST;
 		m_pstSubjectCS = pstSubjectCS;
 
 		assert(m_pstSubjectCS);
@@ -124,6 +113,8 @@ void CSubjectUI::SetMode(E_STATUS eMode, SUBJECT_CST* pstSubjectCS, USER_ANSWER_
 
 void CSubjectUI::InitCtrl()
 {
+	if (!m_cbQustionType.GetSafeHwnd())
+		return;
 	m_cbQustionType.InsertString(QUESTION_TYPE_SELECTION, _T("选择题"));
 	m_cbQustionType.InsertString(QUESTION_TYPE_FILL, _T("填空题"));
 
@@ -138,6 +129,8 @@ void CSubjectUI::InitCtrl()
 	m_cbDifDegree.InsertString(8, _T("9"));
 	m_cbDifDegree.InsertString(9, _T("10"));
 
+	UpdateData(FALSE);
+	UpdateCtrl(FALSE);
 	if (m_enumStatus == e_add_subject)
 	{
 		SetWindowText(_T("添加题库"));
@@ -145,51 +138,42 @@ void CSubjectUI::InitCtrl()
 		m_cbDifDegree.SetCurSel(0);
 		m_cbQustionType.EnableWindow(TRUE);
 		m_cbDifDegree.EnableWindow(TRUE);
+		GetDlgItem(ID_BTN_PRESUB)->ShowWindow(SW_HIDE);
+		m_staticDuration.ShowWindow(SW_HIDE);
+		m_staticDurFlag.ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_EDIT_TITLE)->EnableWindow(TRUE);
 	}
 	else if (m_enumStatus == e_display_subject)
 	{
 		SetWindowText(_T("展示题库"));
-		UpdateData(FALSE);
-		UpdateCheckBtn(FALSE);
 		m_cbQustionType.EnableWindow(FALSE);
 		m_cbDifDegree.EnableWindow(FALSE);
+		GetDlgItem(ID_BTN_PRESUB)->ShowWindow(SW_SHOW);
+		m_staticDuration.ShowWindow(SW_HIDE);
+		m_staticDurFlag.ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_EDIT_TITLE)->EnableWindow(FALSE);
 	}
 	else if (m_enumStatus == e_answer_subject)
 	{
 		SetWindowText(_T("答题"));
-		UpdateData(FALSE);
-		UpdateCheckBtn(FALSE);
 		m_cbQustionType.EnableWindow(FALSE);
 		m_cbDifDegree.EnableWindow(FALSE);
+		GetDlgItem(ID_BTN_PRESUB)->ShowWindow(SW_SHOW);
+		m_staticDuration.ShowWindow(SW_SHOW);
+		m_staticDurFlag.ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_EDIT_TITLE)->EnableWindow(FALSE);
 	}
-}
 
+	m_staticDuration.SetWindowText(L"");
+}
 
 void CSubjectUI::OnCbnSelchangeComboQuestionType()
 {
-	//填空题
-	if (m_cbQustionType.GetCurSel() == QUESTION_TYPE_FILL)
-	{
-		m_btnAnsA.ShowWindow(SW_HIDE);
-		m_btnAnsB.ShowWindow(SW_HIDE);
-		m_btnAnsC.ShowWindow(SW_HIDE);
-		m_btnAnsD.ShowWindow(SW_HIDE);
-	}
-	else if (m_cbQustionType.GetCurSel() == QUESTION_TYPE_SELECTION)
-	{
-		m_btnAnsA.ShowWindow(SW_SHOW);
-		m_btnAnsB.ShowWindow(SW_SHOW);
-		m_btnAnsC.ShowWindow(SW_SHOW);
-		m_btnAnsD.ShowWindow(SW_SHOW);
-	}
-
+	UpdateCtrl(FALSE);
 }
 
 bool CSubjectUI::CommitAddSubject()
 {
-	UpdateData(TRUE);
-	UpdateCheckBtn(TRUE);
-
 	assert(m_pstSubjectCS);
 	if (m_pstSubjectCS->nQuestionType == QUESTION_TYPE_SELECTION && m_pstSubjectCS->nRightAnswer == 0)
 	{
@@ -218,27 +202,27 @@ bool CSubjectUI::CommitAddSubject()
 
 bool CSubjectUI::CommitAnswerSubject()
 {
-	UpdateData(TRUE);
-	UpdateCheckBtn(TRUE);
-
 	assert(m_pstSubjectCS && m_pstUserAnswerCS);
 
-	if (m_pstSubjectCS->nQuestionType == QUESTION_TYPE_SELECTION && m_pstUserAnswerCS->nUserSelection == 0)
-	{
-		AfxMessageBox(_T("必须选择一个答案"));
-		return false;
-	}
+// 	if (m_pstSubjectCS->nQuestionType == QUESTION_TYPE_SELECTION && m_pstUserAnswerCS->nUserSelection == 0)
+// 	{
+// 		AfxMessageBox(_T("必须选择一个答案"));
+// 		return false;
+// 	}
+// 
+// 	if (m_pstSubjectCS->nQuestionType == QUESTION_TYPE_FILL && m_pstUserAnswerCS->szUserAnswerA.IsEmpty())
+// 	{
+// 		AfxMessageBox(_T("必须填写答案"));
+// 		return false;
+// 	}
 
-	if (m_pstSubjectCS->nQuestionType == QUESTION_TYPE_FILL && m_pstUserAnswerCS->szUserAnswerA.IsEmpty())
-	{
-		AfxMessageBox(_T("必须填写答案"));
-		return false;
-	}
-
+	CDBMgr mgr;
+	int nScore = mgr.CheckAnswer(*m_pstUserAnswerCS, *m_pstSubjectCS);
+	m_pstUserAnswerCS->nScore = nScore / 4;
 	return true;
 }
 
-void CSubjectUI::UpdateCheckBtn(BOOL bSaved)
+void CSubjectUI::UpdateCtrl(BOOL bSaved)
 {
 	if (m_enumStatus == e_add_subject || m_enumStatus == e_display_subject)
 	{
@@ -269,39 +253,75 @@ void CSubjectUI::UpdateCheckBtn(BOOL bSaved)
 			m_btnAnsA.SetCheck(m_pstUserAnswerCS->nUserSelection >> 0 & 1);
 		}
 	}
+
+	//填空题
+	GetDlgItem(IDC_EDIT_ANS_B)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_EDIT_ANS_C)->ShowWindow(SW_SHOW);
+	GetDlgItem(IDC_EDIT_ANS_D)->ShowWindow(SW_SHOW);
+
+	GetDlgItem(IDC_EDIT_ANS_A)->EnableWindow(TRUE);
+	GetDlgItem(IDC_EDIT_ANS_B)->EnableWindow(TRUE);
+	GetDlgItem(IDC_EDIT_ANS_C)->EnableWindow(TRUE);
+	GetDlgItem(IDC_EDIT_ANS_D)->EnableWindow(TRUE);
+	if (m_cbQustionType.GetCurSel() == QUESTION_TYPE_FILL)
+	{
+		m_btnAnsA.ShowWindow(SW_HIDE);
+		m_btnAnsB.ShowWindow(SW_HIDE);
+		m_btnAnsC.ShowWindow(SW_HIDE);
+		m_btnAnsD.ShowWindow(SW_HIDE);
+
+		if (m_pstSubjectCS->szAnswerB.IsEmpty())
+			GetDlgItem(IDC_EDIT_ANS_B)->ShowWindow(SW_HIDE);
+		if (m_pstSubjectCS->szAnswerC.IsEmpty())
+			GetDlgItem(IDC_EDIT_ANS_C)->ShowWindow(SW_HIDE);
+		if (m_pstSubjectCS->szAnswerD.IsEmpty())
+			GetDlgItem(IDC_EDIT_ANS_D)->ShowWindow(SW_HIDE);
+	}
+	else if (m_cbQustionType.GetCurSel() == QUESTION_TYPE_SELECTION)
+	{
+		m_btnAnsA.ShowWindow(SW_SHOW);
+		m_btnAnsB.ShowWindow(SW_SHOW);
+		m_btnAnsC.ShowWindow(SW_SHOW);
+		m_btnAnsD.ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_EDIT_ANS_A)->EnableWindow(FALSE);
+		GetDlgItem(IDC_EDIT_ANS_B)->EnableWindow(FALSE);
+		GetDlgItem(IDC_EDIT_ANS_C)->EnableWindow(FALSE);
+		GetDlgItem(IDC_EDIT_ANS_D)->EnableWindow(FALSE);
+	}
 }
-
-// int CSubjectUI::Create(UINT nIDTemplate, CWnd* pParentWnd /* = NULL */)
-// {
-// 	CWnd::Create()
-// }
-
 
 void CSubjectUI::OnBnClickedNextsub()
 {
 	bool bRet = true;
-	switch (m_enumStatus)
-	{
-	case e_display_subject:
-		break;
-	case e_add_subject:
-		bRet = CommitAddSubject();
-		break;
-	case e_answer_subject:
-		bRet = CommitAnswerSubject();
-		break;
-	default:
-		break;
-	}
-
+	bRet = Commit();
 	if (!bRet)
 		return;
+
+	((CAIPaperMakerDlg*)m_pParentWnd)->ProcessChildNext();
+	UpdateData(FALSE);
+	UpdateCtrl(FALSE);
 }
 
 
 void CSubjectUI::OnBnClickedPresub()
 {
 	bool bRet = true;
+	bRet = Commit();
+	if (!bRet)
+		return;
+
+	((CAIPaperMakerDlg*)m_pParentWnd)->ProcessChildPre();
+	UpdateData(FALSE);
+	UpdateCtrl(FALSE);
+
+}
+
+bool CSubjectUI::Commit()
+{
+	bool bRet = true;
+	UpdateData(TRUE);
+	UpdateCtrl(TRUE);
+
 	switch (m_enumStatus)
 	{
 	case e_display_subject:
@@ -315,7 +335,26 @@ void CSubjectUI::OnBnClickedPresub()
 	default:
 		break;
 	}
+	return bRet;
+}
 
-	if (!bRet)
-		return;
+
+void CSubjectUI::OnTimer(UINT_PTR nIDEvent)
+{
+	// TODO:  在此添加消息处理程序代码和/或调用默认值
+	(*m_pnDurationTime)++;
+
+	CString str;
+	str.Format(L"%02d:%02d:%02d", *m_pnDurationTime / 3600, *m_pnDurationTime / 60, *m_pnDurationTime % 60);
+
+	m_staticDuration.SetWindowText(str);
+	CDialogEx::OnTimer(nIDEvent);
+}
+
+
+void CSubjectUI::OnDestroy()
+{
+	CDialogEx::OnDestroy();
+
+	KillTimer(ID_TIMER_DURATION);
 }

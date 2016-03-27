@@ -20,11 +20,14 @@ public:
 
 	int AddSubject(SUBJECT_T &stSubject);
 	int GetSubjectByID(int nID, SUBJECT_T &stSuject);
-	int CheckAnswer(USER_ANSWER_T &stUserAnswer);
+	int CheckAnswer(USER_ANSWER_T &stUserAnswer, SUBJECT_T *pstSubject = NULL);
 
 	int AddSubject(SUBJECT_CST &stSubjectCS);
 	int GetSubjectByID(int nID, SUBJECT_CST &stSubjectCS);
 	int CheckAnswer(USER_ANSWER_CST &stUserAnswerCS);
+	int CheckAnswer(USER_ANSWER_CST &stUserAnswerCS, SUBJECT_CST &stSubjectCS);
+
+	int GetSubjectsCnt();
 
 	int DeleteSubjectByID(int nID);
 

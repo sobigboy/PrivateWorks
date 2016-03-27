@@ -6,7 +6,8 @@
 #include "AIPaperMaker.h"
 #include "AIPaperMakerDlg.h"
 #include "afxdialogex.h"
-#include "SubjectUI.h"
+#include "StatisticInfoUI.h"
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -54,6 +55,9 @@ CAIPaperMakerDlg::CAIPaperMakerDlg(CWnd* pParent /*=NULL*/)
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	m_pSubjectUI = NULL;
 	m_eMode = e_add_subject;
+	m_nCurSubjectIdx = 0;
+	m_nExaminationQuestionCnt = MIN_ANSWERQUESTION_CNT;
+	m_nDurationTimeInSec = 0;
 	memset(m_stSubjectList, 0, sizeof(m_stSubjectList));
 	memset(m_stUserAnswerList, 0, sizeof(m_stUserAnswerList));
 }
@@ -70,6 +74,7 @@ BEGIN_MESSAGE_MAP(CAIPaperMakerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_ANSWER, &CAIPaperMakerDlg::OnBnClickedBtnAnswer)
 	ON_BN_CLICKED(IDC_BTN_ADD, &CAIPaperMakerDlg::OnBnClickedBtnAdd)
 	ON_BN_CLICKED(IDC_BTN_DISPLAY, &CAIPaperMakerDlg::OnBnClickedBtnDisplay)
+	ON_MESSAGE(WM_MESSAGE_COMMIT_PAPER, OnCommitPaper)
 	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
@@ -105,14 +110,6 @@ BOOL CAIPaperMakerDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 设置大图标
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
-	// TODO:  在此添加额外的初始化代码
-	if (m_pSubjectUI)
-	{
-		delete(m_pSubjectUI);
-		m_pSubjectUI = NULL;
-	}
-	m_pSubjectUI = new CSubjectUI;
-	m_pSubjectUI->Create(IDD_ADDSUBJECT_DLG, this);
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -124,7 +121,6 @@ void CAIPaperMakerDlg::OnDestroy()
 	ClearLists();
 	if (m_pSubjectUI)
 	{
-// 		m_pSubjectUI->DestroyWindow();
 		delete(m_pSubjectUI);
 		m_pSubjectUI = NULL;
 	}
@@ -181,7 +177,23 @@ HCURSOR CAIPaperMakerDlg::OnQueryDragIcon()
 
 void CAIPaperMakerDlg::OnBnClickedBtnAnswer()
 {
-	SelectMode(e_answer_subject);
+	CDBMgr mgr;
+	int nRet = mgr.GetSubjectsCnt();
+	if (nRet < m_nExaminationQuestionCnt)
+	{
+		AfxMessageBox(_T("题库中题目偏少，无法完成智能组卷！"));
+		return;
+	}
+
+	int nN = 3;
+	int nM = 3;
+	m_nExaminationQuestionCnt = nN + nM;
+	nRet = AutoMakePapers(nN, nM);
+
+	if (nRet >= 0)
+		SelectMode(e_answer_subject);
+	else
+		AfxMessageBox(_T("智能组卷失败"));
 }
 
 void CAIPaperMakerDlg::OnBnClickedBtnAdd()
@@ -214,25 +226,132 @@ void CAIPaperMakerDlg::ClearLists()
 			m_stUserAnswerList[i] = NULL;
 		}
 	}
-
 }
 
 void CAIPaperMakerDlg::SelectMode(E_STATUS eStatus)
 {
 	m_eMode = eStatus;
-	m_pSubjectUI->SetMode(m_eMode, m_stSubjectList[0], m_stUserAnswerList[0]);
-	m_pSubjectUI->ShowWindow(SW_SHOW);
+	if (m_pSubjectUI)
+	{
+		m_pSubjectUI->DestroyWindow();
+		delete(m_pSubjectUI);
+		m_pSubjectUI = NULL;
+	}
+	m_pSubjectUI = new CSubjectUI(this);
 
+	if (m_eMode == e_add_subject || m_eMode == e_display_subject)
+	{
+		m_stSubjectList[m_nCurSubjectIdx] = new SUBJECT_CST;
+	}
+	m_pSubjectUI->SetMode(m_eMode, m_stSubjectList[m_nCurSubjectIdx], m_stUserAnswerList[m_nCurSubjectIdx]);
+	m_nDurationTimeInSec = 0;
+	m_pSubjectUI->SetDurationTime(&m_nDurationTimeInSec);
+	m_pSubjectUI->Create(IDD_ADDSUBJECT_DLG, this);
+	m_pSubjectUI->ShowWindow(SW_SHOW);
 }
 
 BOOL CAIPaperMakerDlg::ProcessChildPre()
 {
-
+	if (m_nCurSubjectIdx > 0 && m_nCurSubjectIdx < ((m_eMode == e_answer_subject) ? m_nExaminationQuestionCnt : MAX_ADD_SUBJECT_CNT))
+	{
+		m_nCurSubjectIdx--;
+		if (m_eMode == e_answer_subject)
+		{
+			CString str;
+			str.Format(_T("共%d题，当前是第%d题"), m_nExaminationQuestionCnt, m_nCurSubjectIdx + 1);
+			m_pSubjectUI->SetWindowText(str);
+		}
+		m_pSubjectUI->SetMode(m_eMode, m_stSubjectList[m_nCurSubjectIdx], m_stUserAnswerList[m_nCurSubjectIdx]);
+	}
+	else
+	{
+		AfxMessageBox(_T("已到头,无法继续往前翻!"));
+	}
+	return 0;
 }
 
 BOOL CAIPaperMakerDlg::ProcessChildNext()
 {
+	if (m_nCurSubjectIdx >= 0 && m_nCurSubjectIdx < ((m_eMode == e_answer_subject) ? m_nExaminationQuestionCnt : MAX_ADD_SUBJECT_CNT )- 1)
+	{
+		m_nCurSubjectIdx++;
+		if (m_eMode == e_add_subject || m_eMode == e_display_subject)
+		{
+			m_stSubjectList[m_nCurSubjectIdx] = new SUBJECT_CST;
+		}
+		else
+		{
+			CString str;
+			str.Format(_T("共%d题，当前是第%d题"), m_nExaminationQuestionCnt, m_nCurSubjectIdx + 1);
+			m_pSubjectUI->SetWindowText(str);
 
+		}
+		m_pSubjectUI->SetMode(m_eMode, m_stSubjectList[m_nCurSubjectIdx], m_stUserAnswerList[m_nCurSubjectIdx]);
+	}
+	else
+	{
+		AfxMessageBox(_T("已到尾,无法继续往后翻!"));
+	}
+	return 0;
 }
 
+int CAIPaperMakerDlg::AutoMakePapers(int nSelectionSubCnt, int nFillSubCnt)
+{
+	int nRet = -1;
+	int nTotalCnt = 0;
+	int nMakeCnt = 0;
 
+	CDBMgr mgr;
+	nTotalCnt = mgr.GetSubjectsCnt();
+
+	if (nTotalCnt < nSelectionSubCnt + nFillSubCnt)
+		return nRet;
+
+	for (int i = 1; i < nTotalCnt + 1; i++)
+	{
+		if (nMakeCnt >= nSelectionSubCnt + nFillSubCnt)
+		{
+			nRet = 0;
+			break;
+		}
+
+		SUBJECT_CST temp;
+		if (mgr.GetSubjectByID(i, temp))
+		{
+			m_stSubjectList[nMakeCnt] = new SUBJECT_CST;
+			m_stUserAnswerList[nMakeCnt] = new USER_ANSWER_CST;
+			*m_stSubjectList[nMakeCnt] = &temp;
+			nMakeCnt++;
+		}
+	}
+
+	return nRet;
+}
+
+LRESULT CAIPaperMakerDlg::OnCommitPaper(WPARAM w, LPARAM l)
+{
+	//统计答题情况，并显示
+
+	m_pSubjectUI->DestroyWindow();
+	if (m_eMode == e_answer_subject)
+	{
+		STATISTIC_INFO info;
+		info.strDuration.Format(L"%02d:%02d:%02d", m_nDurationTimeInSec / 3600, m_nDurationTimeInSec / 60, m_nDurationTimeInSec % 60);
+
+		for (int i = 0; i < m_nExaminationQuestionCnt; i++)
+		{
+			info.nTotalScore += m_stUserAnswerList[i]->nScore;
+
+			if (m_stUserAnswerList[i]->nUserSelection == 0 && m_stUserAnswerList[i]->szUserAnswerA.IsEmpty())
+				info.nUnansweredCnt++;
+		}
+
+		info.nTotalCnt = m_nExaminationQuestionCnt;
+		info.nAnsweredCnt = info.nTotalCnt - info.nUnansweredCnt;
+
+		CStatisticInfoUI ui(&info);
+		ui.DoModal();
+	}
+
+	return 0;
+}

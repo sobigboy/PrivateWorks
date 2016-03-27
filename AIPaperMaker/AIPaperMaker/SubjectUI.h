@@ -24,15 +24,18 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 public:
+	void SetDurationTime(int * pnDurationTime){ m_pnDurationTime = pnDurationTime; };
 	void SetMode(E_STATUS eMode, SUBJECT_CST* pstSubjectCS, USER_ANSWER_CST* pstUserAnser = NULL);
 
 private:
 	void InitCtrl();
-	void UpdateCheckBtn(BOOL bSaved);
+	bool Commit();
+	void UpdateCtrl(BOOL bSaved);
 	bool CommitAddSubject();
 	bool CommitAnswerSubject();
 
 protected:
+	int *m_pnDurationTime;
 	SUBJECT_CST* m_pstSubjectCS;
 	USER_ANSWER_CST* m_pstUserAnswerCS;
 	E_STATUS m_enumStatus;
@@ -46,4 +49,8 @@ protected:
 public:
 	afx_msg void OnBnClickedNextsub();
 	afx_msg void OnBnClickedPresub();
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg void OnDestroy();
+	CStatic m_staticDuration;
+	CStatic m_staticDurFlag;
 };

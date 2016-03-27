@@ -139,6 +139,11 @@ int CDBMgr::GetSubjectByID(int nID, SUBJECT_T &stSubject)
 	{
 		stSubject.nSubjectID = nID;
 	}
+	else
+	{
+		mgr.CloseDBA();
+		return -1;
+	}
 
 	for(int i = 0; i < nRet; i++)
 	{
@@ -168,14 +173,13 @@ int CDBMgr::GetSubjectByID(int nID, SUBJECT_CST &stSubjectCS)
 	
 	nRet = GetSubjectByID(nID, stSubject);
 
+	if (nRet < 0)
+		return nRet;
+
 	stSubjectCS.nSubjectID = stSubject.nSubjectID;
 	stSubjectCS.nDifficultyDegree = stSubject.nDifficultyDegree;
 	stSubjectCS.nQuestionType = stSubject.nQuestionType;
-	CString str;
-	str = L"";
-	stSubjectCS.szExaminationQuestion.Append(stSubject.szExaminationQuestion);
-
-	
+	stSubjectCS.szExaminationQuestion = stSubject.szExaminationQuestion;
 	stSubjectCS.szAnswerA = stSubject.szAnswerA;
 	stSubjectCS.szAnswerB = stSubject.szAnswerB;
 	stSubjectCS.szAnswerC = stSubject.szAnswerC;
@@ -184,14 +188,15 @@ int CDBMgr::GetSubjectByID(int nID, SUBJECT_CST &stSubjectCS)
 	return nRet;
 }
 
-int CDBMgr::CheckAnswer(USER_ANSWER_T &stUserAnswer)
+int CDBMgr::CheckAnswer(USER_ANSWER_T &stUserAnswer, SUBJECT_T* pstSubject/* = NULL*/)
 {
 	SUBJECT_T stSubject = { 0 };
 	int nScore = 0;
 
-	GetSubjectByID(stUserAnswer.nSubjectID, stSubject);
-
-	assert(stUserAnswer.nQuestionType == stSubject.nQuestionType);
+	if (!pstSubject)
+		GetSubjectByID(stUserAnswer.nSubjectID, stSubject);
+	else
+		memcpy(&stSubject, pstSubject, sizeof(SUBJECT_T));
 
 	if(stSubject.nQuestionType == QUESTION_TYPE_SELECTION)
 	{
@@ -228,6 +233,16 @@ int CDBMgr::CheckAnswer(USER_ANSWER_CST &stUserAnswerCS)
 	return CheckAnswer(stUserAnswer);
 }
 
+int CDBMgr::CheckAnswer(USER_ANSWER_CST &stUserAnswerCS, SUBJECT_CST &stSubjectCS)
+{
+	USER_ANSWER_T stUserAnswer = { 0 };
+	stUserAnswer = stUserAnswerCS;
+
+	SUBJECT_T stSubject = { 0 };
+	stSubject = stSubjectCS;
+
+	return CheckAnswer(stUserAnswer, &stSubject);
+}
 
 int CDBMgr::DeleteSubjectByID(int nID)
 {
@@ -267,6 +282,25 @@ int CDBMgr::AddTestQuestion()
 	subject.nRightAnswer = 4;
 
 	return AddSubject(subject);
+}
+
+int CDBMgr::GetSubjectsCnt()
+{
+	CComnDBAMgr mgr;
+	int nRet = mgr.OpenDBA();
+	if (nRet != 0)
+	{
+		printf("GetSubjectsCnt(): open db failed\n");
+		return nRet;
+	}
+
+	TCHAR szSql[] = _T("select * from subject");
+
+	mgr.InitSelectTask();
+	nRet = mgr.SelectSQL(szSql);
+	mgr.CloseDBA();
+
+	return nRet;
 }
 
 

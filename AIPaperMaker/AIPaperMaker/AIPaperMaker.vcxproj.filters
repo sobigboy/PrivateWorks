@@ -51,6 +51,9 @@
     <ClInclude Include="BasedataDefine.h">
       <Filter>DBMgr</Filter>
     </ClInclude>
+    <ClInclude Include="StatisticInfoUI.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AIPaperMaker.cpp">
@@ -67,6 +70,9 @@
     </ClCompile>
     <ClCompile Include="SubjectUI.cpp">
       <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="StatisticInfoUI.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

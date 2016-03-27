@@ -1,12 +1,38 @@
+#ifndef _BASEDATADEFINE_H_
+#define _BASEDATADEFINE_H_
+
 #include "CommonDBA.h"
 
-#define MAX_ANSWERQUESTION_CNT (100)
+
+#define MIN_ANSWERQUESTION_CNT	(5)
+#define MAX_ANSWERQUESTION_CNT (50)
 #define MAX_ADD_SUBJECT_CNT	(100)
 
 #define MAX_SUBJECT_STRING_LEN	(4096)
 
 #define QUESTION_TYPE_SELECTION	(0)
 #define QUESTION_TYPE_FILL	(1)
+
+
+#define WM_MESSAGE_COMMIT_PAPER		(10012)
+
+typedef struct _statistic_info
+{
+	CString strDuration;
+	int nTotalCnt;
+	int nAnsweredCnt;
+	int nUnansweredCnt;
+	int nTotalScore;
+
+	_statistic_info()
+	{
+		strDuration = L"";
+		nTotalCnt = 0;
+		nAnsweredCnt = 0;
+		nUnansweredCnt = 0;
+		nTotalScore = 0;
+	}
+}STATISTIC_INFO;
 
 typedef enum e_status
 {
@@ -26,6 +52,34 @@ typedef struct _subject_cst
 	CString szAnswerC;
 	CString szAnswerD;
 	int	nRightAnswer;
+
+	_subject_cst()
+	{
+		nSubjectID = 0;
+		nDifficultyDegree = 0;
+		nQuestionType = 0;
+		szExaminationQuestion = L"";
+		szAnswerA = L"";
+		szAnswerB = L"";
+		szAnswerC = L"";
+		szAnswerD = L"";
+		nRightAnswer = 0;
+	}
+
+	_subject_cst& operator = (_subject_cst*cs)
+	{
+		nSubjectID = cs->nSubjectID;
+		nDifficultyDegree = cs->nDifficultyDegree;
+		nQuestionType = cs->nQuestionType;
+		szExaminationQuestion = cs->szExaminationQuestion;
+		szAnswerA = cs->szAnswerA;
+		szAnswerB = cs->szAnswerB;
+		szAnswerC = cs->szAnswerC;
+		szAnswerD = cs->szAnswerD;
+		nRightAnswer = cs->nRightAnswer;
+
+		return *this;
+	}
 }SUBJECT_CST;
 
 typedef struct _user_answer_cst
@@ -36,13 +90,23 @@ typedef struct _user_answer_cst
 	CString szUserAnswerC;
 	CString szUserAnswerD;
 	int nUserSelection;
+	int nScore;
+	_user_answer_cst()
+	{
+		nSubjectID = 0;
+		szUserAnswerA = L"";
+		szUserAnswerB = L"";
+		szUserAnswerC= L"";
+		szUserAnswerD= L"";
+		nUserSelection = 0;
+		nScore = 0;
+	}
 }USER_ANSWER_CST;
 
 typedef struct _user_answer_t
 {
 	int nSubjectID;
 	int nDifficultyDegree;
-	int nQuestionType;
 	TCHAR szUserAnswerA[MAX_SUBJECT_STRING_LEN];
 	TCHAR szUserAnswerB[MAX_SUBJECT_STRING_LEN];
 	TCHAR szUserAnswerC[MAX_SUBJECT_STRING_LEN];
@@ -88,3 +152,5 @@ typedef struct _subject_t
 		return this;
 	}
 }SUBJECT_T;
+
+#endif

@@ -34,6 +34,7 @@ protected:
 	afx_msg void OnBnClickedBtnAdd();
 	afx_msg void OnBnClickedBtnDisplay();
 	afx_msg void OnDestroy();
+	afx_msg LRESULT OnCommitPaper(WPARAM w, LPARAM l);
 	DECLARE_MESSAGE_MAP()
 
 public:
@@ -41,12 +42,17 @@ public:
 	BOOL ProcessChildNext();
 
 protected:
+
+	int AutoMakePapers(int nSelectionSubCnt, int nFillSubCnt);
 	void ClearLists();
 	void SelectMode(E_STATUS eStatus);
 
 private:
+	int m_nDurationTimeInSec;
+	int m_nExaminationQuestionCnt;
 	E_STATUS m_eMode;
 	CSubjectUI* m_pSubjectUI;
+	int m_nCurSubjectIdx;
 	SUBJECT_CST* m_stSubjectList[MAX_ADD_SUBJECT_CNT];
 	USER_ANSWER_CST* m_stUserAnswerList[MAX_ANSWERQUESTION_CNT];
 };
