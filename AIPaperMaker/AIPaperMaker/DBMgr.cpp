@@ -6,7 +6,7 @@
 CDBMgr::CDBMgr()
 {
 	CreateTable_Subject();
-	//AddTestQuestion();
+ 	//AddTestQuestion();
 
 }
 
@@ -140,7 +140,6 @@ int CDBMgr::GetSubjectByID(int nID, SUBJECT_T &stSubject)
 		stSubject.nSubjectID = nID;
 	}
 
-
 	for(int i = 0; i < nRet; i++)
 	{
 		stSubject.nDifficultyDegree = mgr.GetFieldAsInt32(_T("difficulty_degree"));
@@ -172,7 +171,11 @@ int CDBMgr::GetSubjectByID(int nID, SUBJECT_CST &stSubjectCS)
 	stSubjectCS.nSubjectID = stSubject.nSubjectID;
 	stSubjectCS.nDifficultyDegree = stSubject.nDifficultyDegree;
 	stSubjectCS.nQuestionType = stSubject.nQuestionType;
-	stSubjectCS.szExaminationQuestion = stSubject.szExaminationQuestion;
+	CString str;
+	str = L"";
+	stSubjectCS.szExaminationQuestion.Append(stSubject.szExaminationQuestion);
+
+	
 	stSubjectCS.szAnswerA = stSubject.szAnswerA;
 	stSubjectCS.szAnswerB = stSubject.szAnswerB;
 	stSubjectCS.szAnswerC = stSubject.szAnswerC;
@@ -255,13 +258,13 @@ int CDBMgr::AddTestQuestion()
 	SUBJECT_T subject = { 0 };
 
 	subject.nDifficultyDegree = 1;
-	subject.nQuestionType = 1;
+	subject.nQuestionType = 0;
 	_stprintf_s(subject.szExaminationQuestion, MAX_SUBJECT_STRING_LEN, _T("%s"), _T("question : test question?"));
 	_stprintf_s(subject.szAnswerA, MAX_SUBJECT_STRING_LEN, _T("%s"), _T("answer : a"));
 	_stprintf_s(subject.szAnswerB, MAX_SUBJECT_STRING_LEN, _T("%s"), _T("answer : b"));
 	_stprintf_s(subject.szAnswerC, MAX_SUBJECT_STRING_LEN, _T("%s"), _T("right answer : c"));
 	_stprintf_s(subject.szAnswerD, MAX_SUBJECT_STRING_LEN, _T("%s"), _T("answer : d"));
-	subject.nRightAnswer = 3;
+	subject.nRightAnswer = 4;
 
 	return AddSubject(subject);
 }

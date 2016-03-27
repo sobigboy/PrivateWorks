@@ -1,5 +1,8 @@
 #include "CommonDBA.h"
 
+#define MAX_ANSWERQUESTION_CNT (100)
+#define MAX_ADD_SUBJECT_CNT	(100)
+
 #define MAX_SUBJECT_STRING_LEN	(4096)
 
 #define QUESTION_TYPE_SELECTION	(0)

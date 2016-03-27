@@ -19,22 +19,6 @@ CSubjectUI::CSubjectUI(CWnd* pParent /*=NULL*/)
 	m_enumStatus = e_add_subject;
 }
 
-CSubjectUI::CSubjectUI(SUBJECT_CST* pstSubject, E_STATUS eStatus, CWnd* pParent /*=NULL*/)
-: CDialogEx(CSubjectUI::IDD, pParent)
-{
-	m_pstSubjectCS = pstSubject;
-	m_pstUserAnswerCS = NULL;
-	m_enumStatus = eStatus;
-}
-
-CSubjectUI::CSubjectUI(USER_ANSWER_CST* pstUserAnswerCS,  E_STATUS eStatus, CWnd* pParent /*=NULL*/)
-: CDialogEx(CSubjectUI::IDD, pParent)
-{
-	m_pstUserAnswerCS = pstUserAnswerCS;
-	m_pstSubjectCS = NULL;
-	m_enumStatus = eStatus;
-}
-
 CSubjectUI::~CSubjectUI()
 {
 }
@@ -49,29 +33,28 @@ void CSubjectUI::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CHECK3, m_btnAnsC);
 	DDX_Control(pDX, IDC_CHECK4, m_btnAnsD);
 
+	if (!m_pstUserAnswerCS || !m_pstSubjectCS)
+		return;
+
+	DDX_Text(pDX, IDC_EDIT_TITLE, m_pstSubjectCS->szExaminationQuestion);
+	DDX_CBIndex(pDX, IDC_COMBO_DIF_DEGREE, m_pstSubjectCS->nDifficultyDegree);
+	DDX_CBIndex(pDX, IDC_COMBO_QUESTION_TYPE, m_pstSubjectCS->nQuestionType);
+
 	//添加题库 || 展示题库
-	if (m_enumStatus == e_add_subject || m_enumStatus == e_display_subject)
-	{
-		DDX_Text(pDX, IDC_EDIT_TITLE, m_pstSubjectCS->szExaminationQuestion);
-		DDX_CBIndex(pDX, IDC_COMBO_DIF_DEGREE, m_pstSubjectCS->nDifficultyDegree);
-		DDX_CBIndex(pDX, IDC_COMBO_QUESTION_TYPE, m_pstSubjectCS->nQuestionType);
 
-		DDX_Text(pDX, IDC_EDIT_ANS_A, m_pstSubjectCS->szAnswerA);
-		DDX_Text(pDX, IDC_EDIT_ANS_B, m_pstSubjectCS->szAnswerB);
-		DDX_Text(pDX, IDC_EDIT_ANS_C, m_pstSubjectCS->szAnswerC);
-		DDX_Text(pDX, IDC_EDIT_ANS_D, m_pstSubjectCS->szAnswerD);
-	}
-	//考试中
-	if (m_enumStatus == e_answer_subject)
+	if (m_enumStatus == e_answer_subject && m_pstSubjectCS->nQuestionType == QUESTION_TYPE_FILL)
 	{
-		DDX_Text(pDX, IDC_EDIT_TITLE, m_pstSubjectCS->szExaminationQuestion);
-		DDX_CBIndex(pDX, IDC_COMBO_DIF_DEGREE, m_pstSubjectCS->nDifficultyDegree);
-		DDX_CBIndex(pDX, IDC_COMBO_QUESTION_TYPE, m_pstSubjectCS->nQuestionType);
-
 		DDX_Text(pDX, IDC_EDIT_ANS_A, m_pstUserAnswerCS->szUserAnswerA);
 		DDX_Text(pDX, IDC_EDIT_ANS_B, m_pstUserAnswerCS->szUserAnswerB);
 		DDX_Text(pDX, IDC_EDIT_ANS_C, m_pstUserAnswerCS->szUserAnswerC);
 		DDX_Text(pDX, IDC_EDIT_ANS_D, m_pstUserAnswerCS->szUserAnswerD);
+	}
+	else
+	{
+		DDX_Text(pDX, IDC_EDIT_ANS_A, m_pstSubjectCS->szAnswerA);
+		DDX_Text(pDX, IDC_EDIT_ANS_B, m_pstSubjectCS->szAnswerB);
+		DDX_Text(pDX, IDC_EDIT_ANS_C, m_pstSubjectCS->szAnswerC);
+		DDX_Text(pDX, IDC_EDIT_ANS_D, m_pstSubjectCS->szAnswerD);
 	}
 
 }
@@ -80,8 +63,9 @@ void CSubjectUI::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CSubjectUI, CDialogEx)
 	ON_BN_CLICKED(IDOK, &CSubjectUI::OnBnClickedOk)
 	ON_CBN_SELCHANGE(IDC_COMBO_QUESTION_TYPE, &CSubjectUI::OnCbnSelchangeComboQuestionType)
+	ON_BN_CLICKED(ID_NEXTSUB, &CSubjectUI::OnBnClickedNextsub)
+	ON_BN_CLICKED(ID_PRESUB, &CSubjectUI::OnBnClickedPresub)
 END_MESSAGE_MAP()
-
 
 void CSubjectUI::OnBnClickedOk()
 {
@@ -116,6 +100,28 @@ BOOL CSubjectUI::OnInitDialog()
 	return TRUE; 
 }
 
+void CSubjectUI::SetMode(E_STATUS eMode, SUBJECT_CST* pstSubjectCS, USER_ANSWER_CST* pstUserAnser/* = NULL*/)
+{
+	m_enumStatus = eMode;
+
+	if (m_enumStatus == e_display_subject ||
+		m_enumStatus == e_add_subject)
+	{
+		pstSubjectCS = new SUBJECT_CST;
+		m_pstSubjectCS = pstSubjectCS;
+
+		assert(m_pstSubjectCS);
+	}
+	else if (m_enumStatus == e_answer_subject)
+	{
+		m_pstUserAnswerCS = pstUserAnser;
+		m_pstSubjectCS = pstSubjectCS;
+
+		assert(m_pstSubjectCS && m_pstUserAnswerCS);
+		m_pstUserAnswerCS->nSubjectID = m_pstSubjectCS->nSubjectID;
+	}
+}
+
 void CSubjectUI::InitCtrl()
 {
 	m_cbQustionType.InsertString(QUESTION_TYPE_SELECTION, _T("选择题"));
@@ -134,6 +140,7 @@ void CSubjectUI::InitCtrl()
 
 	if (m_enumStatus == e_add_subject)
 	{
+		SetWindowText(_T("添加题库"));
 		m_cbQustionType.SetCurSel(0);
 		m_cbDifDegree.SetCurSel(0);
 		m_cbQustionType.EnableWindow(TRUE);
@@ -141,6 +148,7 @@ void CSubjectUI::InitCtrl()
 	}
 	else if (m_enumStatus == e_display_subject)
 	{
+		SetWindowText(_T("展示题库"));
 		UpdateData(FALSE);
 		UpdateCheckBtn(FALSE);
 		m_cbQustionType.EnableWindow(FALSE);
@@ -148,7 +156,9 @@ void CSubjectUI::InitCtrl()
 	}
 	else if (m_enumStatus == e_answer_subject)
 	{
-		UpdateData(TRUE);
+		SetWindowText(_T("答题"));
+		UpdateData(FALSE);
+		UpdateCheckBtn(FALSE);
 		m_cbQustionType.EnableWindow(FALSE);
 		m_cbDifDegree.EnableWindow(FALSE);
 	}
@@ -184,6 +194,11 @@ bool CSubjectUI::CommitAddSubject()
 	if (m_pstSubjectCS->nQuestionType == QUESTION_TYPE_SELECTION && m_pstSubjectCS->nRightAnswer == 0)
 	{
 		AfxMessageBox(_T("添加失败，必须设置一项或多项为正确答案，并勾选上"));
+		return false;
+	}
+	if (m_pstSubjectCS->nQuestionType == QUESTION_TYPE_FILL && m_pstSubjectCS->szAnswerA.IsEmpty())
+	{
+		AfxMessageBox(_T("必须填写答案"));
 		return false;
 	}
 
@@ -254,6 +269,53 @@ void CSubjectUI::UpdateCheckBtn(BOOL bSaved)
 			m_btnAnsA.SetCheck(m_pstUserAnswerCS->nUserSelection >> 0 & 1);
 		}
 	}
+}
+
+// int CSubjectUI::Create(UINT nIDTemplate, CWnd* pParentWnd /* = NULL */)
+// {
+// 	CWnd::Create()
+// }
 
 
+void CSubjectUI::OnBnClickedNextsub()
+{
+	bool bRet = true;
+	switch (m_enumStatus)
+	{
+	case e_display_subject:
+		break;
+	case e_add_subject:
+		bRet = CommitAddSubject();
+		break;
+	case e_answer_subject:
+		bRet = CommitAnswerSubject();
+		break;
+	default:
+		break;
+	}
+
+	if (!bRet)
+		return;
+}
+
+
+void CSubjectUI::OnBnClickedPresub()
+{
+	bool bRet = true;
+	switch (m_enumStatus)
+	{
+	case e_display_subject:
+		break;
+	case e_add_subject:
+		bRet = CommitAddSubject();
+		break;
+	case e_answer_subject:
+		bRet = CommitAnswerSubject();
+		break;
+	default:
+		break;
+	}
+
+	if (!bRet)
+		return;
 }

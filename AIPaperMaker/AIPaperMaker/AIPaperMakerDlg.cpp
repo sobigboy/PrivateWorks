@@ -6,7 +6,6 @@
 #include "AIPaperMaker.h"
 #include "AIPaperMakerDlg.h"
 #include "afxdialogex.h"
-#include "DBMgr.h"
 #include "SubjectUI.h"
 
 #ifdef _DEBUG
@@ -53,6 +52,10 @@ CAIPaperMakerDlg::CAIPaperMakerDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CAIPaperMakerDlg::IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	m_pSubjectUI = NULL;
+	m_eMode = e_add_subject;
+	memset(m_stSubjectList, 0, sizeof(m_stSubjectList));
+	memset(m_stUserAnswerList, 0, sizeof(m_stUserAnswerList));
 }
 
 void CAIPaperMakerDlg::DoDataExchange(CDataExchange* pDX)
@@ -64,6 +67,10 @@ BEGIN_MESSAGE_MAP(CAIPaperMakerDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_BN_CLICKED(IDC_BTN_ANSWER, &CAIPaperMakerDlg::OnBnClickedBtnAnswer)
+	ON_BN_CLICKED(IDC_BTN_ADD, &CAIPaperMakerDlg::OnBnClickedBtnAdd)
+	ON_BN_CLICKED(IDC_BTN_DISPLAY, &CAIPaperMakerDlg::OnBnClickedBtnDisplay)
+	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 
@@ -99,20 +106,28 @@ BOOL CAIPaperMakerDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
 	// TODO:  在此添加额外的初始化代码
-	int nRet = 0;
-	SUBJECT_CST subcs = { 0 };
-
-	CDBMgr mgr;
-	mgr.GetSubjectByID(1, subcs);
-
-	CSubjectUI ui(&subcs,  e_display_subject);
-
-	if (IDOK == ui.DoModal())
+	if (m_pSubjectUI)
 	{
+		delete(m_pSubjectUI);
+		m_pSubjectUI = NULL;
 	}
-
+	m_pSubjectUI = new CSubjectUI;
+	m_pSubjectUI->Create(IDD_ADDSUBJECT_DLG, this);
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
+}
+
+
+void CAIPaperMakerDlg::OnDestroy()
+{
+	CDialogEx::OnDestroy();
+	ClearLists();
+	if (m_pSubjectUI)
+	{
+// 		m_pSubjectUI->DestroyWindow();
+		delete(m_pSubjectUI);
+		m_pSubjectUI = NULL;
+	}
 }
 
 void CAIPaperMakerDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -163,4 +178,61 @@ HCURSOR CAIPaperMakerDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
+
+void CAIPaperMakerDlg::OnBnClickedBtnAnswer()
+{
+	SelectMode(e_answer_subject);
+}
+
+void CAIPaperMakerDlg::OnBnClickedBtnAdd()
+{
+	ClearLists();
+	SelectMode(e_add_subject);
+}
+
+void CAIPaperMakerDlg::OnBnClickedBtnDisplay()
+{
+	ClearLists();
+	SelectMode(e_display_subject);
+}
+
+void CAIPaperMakerDlg::ClearLists()
+{
+	for (int i = 0; i < MAX_ADD_SUBJECT_CNT; i++)
+	{
+		if (m_stSubjectList[i])
+		{
+			delete(m_stSubjectList[i]);
+			m_stSubjectList[i] = NULL;
+		}
+	}
+	for (int i = 0; i < MAX_ANSWERQUESTION_CNT; i++)
+	{
+		if (m_stUserAnswerList[i])
+		{
+			delete(m_stUserAnswerList[i]);
+			m_stUserAnswerList[i] = NULL;
+		}
+	}
+
+}
+
+void CAIPaperMakerDlg::SelectMode(E_STATUS eStatus)
+{
+	m_eMode = eStatus;
+	m_pSubjectUI->SetMode(m_eMode, m_stSubjectList[0], m_stUserAnswerList[0]);
+	m_pSubjectUI->ShowWindow(SW_SHOW);
+
+}
+
+BOOL CAIPaperMakerDlg::ProcessChildPre()
+{
+
+}
+
+BOOL CAIPaperMakerDlg::ProcessChildNext()
+{
+
+}
+
 

@@ -13,9 +13,6 @@ public:
 	CSubjectUI(CWnd* pParent = NULL);   // 标准构造函数
 	virtual ~CSubjectUI();
 
-	CSubjectUI(SUBJECT_CST* pstSubject, E_STATUS eStatus, CWnd* pParent = NULL);
-	CSubjectUI(USER_ANSWER_CST* pstUserAnswer, E_STATUS eStatus, CWnd* pParent = NULL);
-
 // 对话框数据
 	enum { IDD = IDD_ADDSUBJECT_DLG };
 
@@ -25,6 +22,9 @@ protected:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnCbnSelchangeComboQuestionType();
 	DECLARE_MESSAGE_MAP()
+
+public:
+	void SetMode(E_STATUS eMode, SUBJECT_CST* pstSubjectCS, USER_ANSWER_CST* pstUserAnser = NULL);
 
 private:
 	void InitCtrl();
@@ -43,4 +43,7 @@ protected:
 	CButton m_btnAnsC;
 	CButton m_btnAnsD;
 
+public:
+	afx_msg void OnBnClickedNextsub();
+	afx_msg void OnBnClickedPresub();
 };
