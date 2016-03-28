@@ -44,6 +44,7 @@ public:
 protected:
 
 	int AutoMakePapers(int nSelectionSubCnt, int nFillSubCnt);
+	int AutoMakeDisplay();
 	void ClearLists();
 	void SelectMode(E_STATUS eStatus);
 

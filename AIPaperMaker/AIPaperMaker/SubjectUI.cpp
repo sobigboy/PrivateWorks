@@ -164,7 +164,7 @@ void CSubjectUI::InitCtrl()
 		GetDlgItem(IDC_EDIT_TITLE)->EnableWindow(FALSE);
 	}
 
-	m_staticDuration.SetWindowText(L"");
+	m_staticDuration.SetWindowText(_T(""));
 }
 
 void CSubjectUI::OnCbnSelchangeComboQuestionType()
@@ -283,10 +283,14 @@ void CSubjectUI::UpdateCtrl(BOOL bSaved)
 		m_btnAnsB.ShowWindow(SW_SHOW);
 		m_btnAnsC.ShowWindow(SW_SHOW);
 		m_btnAnsD.ShowWindow(SW_SHOW);
-		GetDlgItem(IDC_EDIT_ANS_A)->EnableWindow(FALSE);
-		GetDlgItem(IDC_EDIT_ANS_B)->EnableWindow(FALSE);
-		GetDlgItem(IDC_EDIT_ANS_C)->EnableWindow(FALSE);
-		GetDlgItem(IDC_EDIT_ANS_D)->EnableWindow(FALSE);
+
+		if (m_enumStatus != e_add_subject)
+		{
+			GetDlgItem(IDC_EDIT_ANS_A)->EnableWindow(FALSE);
+			GetDlgItem(IDC_EDIT_ANS_B)->EnableWindow(FALSE);
+			GetDlgItem(IDC_EDIT_ANS_C)->EnableWindow(FALSE);
+			GetDlgItem(IDC_EDIT_ANS_D)->EnableWindow(FALSE);
+		}
 	}
 }
 
@@ -345,12 +349,11 @@ void CSubjectUI::OnTimer(UINT_PTR nIDEvent)
 	(*m_pnDurationTime)++;
 
 	CString str;
-	str.Format(L"%02d:%02d:%02d", *m_pnDurationTime / 3600, *m_pnDurationTime / 60, *m_pnDurationTime % 60);
+	str.Format(_T("%02d:%02d:%02d"), *m_pnDurationTime / 3600, *m_pnDurationTime / 60, *m_pnDurationTime % 60);
 
 	m_staticDuration.SetWindowText(str);
 	CDialogEx::OnTimer(nIDEvent);
 }
-
 
 void CSubjectUI::OnDestroy()
 {

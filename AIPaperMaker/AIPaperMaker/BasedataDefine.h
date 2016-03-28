@@ -26,7 +26,7 @@ typedef struct _statistic_info
 
 	_statistic_info()
 	{
-		strDuration = L"";
+		strDuration = _T("");
 		nTotalCnt = 0;
 		nAnsweredCnt = 0;
 		nUnansweredCnt = 0;
@@ -58,11 +58,11 @@ typedef struct _subject_cst
 		nSubjectID = 0;
 		nDifficultyDegree = 0;
 		nQuestionType = 0;
-		szExaminationQuestion = L"";
-		szAnswerA = L"";
-		szAnswerB = L"";
-		szAnswerC = L"";
-		szAnswerD = L"";
+		szExaminationQuestion = _T("");
+		szAnswerA = _T("");
+		szAnswerB = _T("");
+		szAnswerC = _T("");
+		szAnswerD = _T("");
 		nRightAnswer = 0;
 	}
 
@@ -94,10 +94,10 @@ typedef struct _user_answer_cst
 	_user_answer_cst()
 	{
 		nSubjectID = 0;
-		szUserAnswerA = L"";
-		szUserAnswerB = L"";
-		szUserAnswerC= L"";
-		szUserAnswerD= L"";
+		szUserAnswerA = _T("");
+		szUserAnswerB = _T("");
+		szUserAnswerC= _T("");
+		szUserAnswerD= _T("");
 		nUserSelection = 0;
 		nScore = 0;
 	}

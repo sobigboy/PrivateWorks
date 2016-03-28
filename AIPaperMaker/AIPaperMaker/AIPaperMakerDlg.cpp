@@ -190,7 +190,7 @@ void CAIPaperMakerDlg::OnBnClickedBtnAnswer()
 	m_nExaminationQuestionCnt = nN + nM;
 	nRet = AutoMakePapers(nN, nM);
 
-	if (nRet >= 0)
+	if (nRet > 0)
 		SelectMode(e_answer_subject);
 	else
 		AfxMessageBox(_T("智能组卷失败"));
@@ -205,7 +205,13 @@ void CAIPaperMakerDlg::OnBnClickedBtnAdd()
 void CAIPaperMakerDlg::OnBnClickedBtnDisplay()
 {
 	ClearLists();
-	SelectMode(e_display_subject);
+	int nRet = AutoMakeDisplay();
+
+	if (nRet > 0)
+		SelectMode(e_display_subject);
+	else
+		AfxMessageBox(_T("题库暂无题目，请先添加"));
+
 }
 
 void CAIPaperMakerDlg::ClearLists()
@@ -239,7 +245,7 @@ void CAIPaperMakerDlg::SelectMode(E_STATUS eStatus)
 	}
 	m_pSubjectUI = new CSubjectUI(this);
 
-	if (m_eMode == e_add_subject || m_eMode == e_display_subject)
+	if (m_eMode == e_add_subject)
 	{
 		m_stSubjectList[m_nCurSubjectIdx] = new SUBJECT_CST;
 	}
@@ -252,10 +258,10 @@ void CAIPaperMakerDlg::SelectMode(E_STATUS eStatus)
 
 BOOL CAIPaperMakerDlg::ProcessChildPre()
 {
-	if (m_nCurSubjectIdx > 0 && m_nCurSubjectIdx < ((m_eMode == e_answer_subject) ? m_nExaminationQuestionCnt : MAX_ADD_SUBJECT_CNT))
+	if (m_nCurSubjectIdx > 0 && m_nCurSubjectIdx < ((m_eMode == e_answer_subject || m_eMode == e_display_subject) ? m_nExaminationQuestionCnt : MAX_ADD_SUBJECT_CNT))
 	{
 		m_nCurSubjectIdx--;
-		if (m_eMode == e_answer_subject)
+		if (m_eMode == e_answer_subject || m_eMode == e_display_subject)
 		{
 			CString str;
 			str.Format(_T("共%d题，当前是第%d题"), m_nExaminationQuestionCnt, m_nCurSubjectIdx + 1);
@@ -272,10 +278,10 @@ BOOL CAIPaperMakerDlg::ProcessChildPre()
 
 BOOL CAIPaperMakerDlg::ProcessChildNext()
 {
-	if (m_nCurSubjectIdx >= 0 && m_nCurSubjectIdx < ((m_eMode == e_answer_subject) ? m_nExaminationQuestionCnt : MAX_ADD_SUBJECT_CNT )- 1)
+	if (m_nCurSubjectIdx >= 0 && m_nCurSubjectIdx < ((m_eMode == e_answer_subject || m_eMode == e_display_subject) ? m_nExaminationQuestionCnt : MAX_ADD_SUBJECT_CNT) - 1)
 	{
 		m_nCurSubjectIdx++;
-		if (m_eMode == e_add_subject || m_eMode == e_display_subject)
+		if (m_eMode == e_add_subject)
 		{
 			m_stSubjectList[m_nCurSubjectIdx] = new SUBJECT_CST;
 		}
@@ -284,7 +290,6 @@ BOOL CAIPaperMakerDlg::ProcessChildNext()
 			CString str;
 			str.Format(_T("共%d题，当前是第%d题"), m_nExaminationQuestionCnt, m_nCurSubjectIdx + 1);
 			m_pSubjectUI->SetWindowText(str);
-
 		}
 		m_pSubjectUI->SetMode(m_eMode, m_stSubjectList[m_nCurSubjectIdx], m_stUserAnswerList[m_nCurSubjectIdx]);
 	}
@@ -297,7 +302,6 @@ BOOL CAIPaperMakerDlg::ProcessChildNext()
 
 int CAIPaperMakerDlg::AutoMakePapers(int nSelectionSubCnt, int nFillSubCnt)
 {
-	int nRet = -1;
 	int nTotalCnt = 0;
 	int nMakeCnt = 0;
 
@@ -305,13 +309,14 @@ int CAIPaperMakerDlg::AutoMakePapers(int nSelectionSubCnt, int nFillSubCnt)
 	nTotalCnt = mgr.GetSubjectsCnt();
 
 	if (nTotalCnt < nSelectionSubCnt + nFillSubCnt)
-		return nRet;
+		return 0;
 
-	for (int i = 1; i < nTotalCnt + 1; i++)
+	int nOffset = nTotalCnt / (nFillSubCnt + nSelectionSubCnt);
+
+	for (int i = 1; i < nTotalCnt + 1; i += nOffset)
 	{
 		if (nMakeCnt >= nSelectionSubCnt + nFillSubCnt)
 		{
-			nRet = 0;
 			break;
 		}
 
@@ -325,18 +330,17 @@ int CAIPaperMakerDlg::AutoMakePapers(int nSelectionSubCnt, int nFillSubCnt)
 		}
 	}
 
-	return nRet;
+	return nMakeCnt;
 }
 
 LRESULT CAIPaperMakerDlg::OnCommitPaper(WPARAM w, LPARAM l)
 {
 	//统计答题情况，并显示
 
-	m_pSubjectUI->DestroyWindow();
 	if (m_eMode == e_answer_subject)
 	{
 		STATISTIC_INFO info;
-		info.strDuration.Format(L"%02d:%02d:%02d", m_nDurationTimeInSec / 3600, m_nDurationTimeInSec / 60, m_nDurationTimeInSec % 60);
+		info.strDuration.Format(_T("%02d:%02d:%02d"), m_nDurationTimeInSec / 3600, m_nDurationTimeInSec / 60, m_nDurationTimeInSec % 60);
 
 		for (int i = 0; i < m_nExaminationQuestionCnt; i++)
 		{
@@ -353,5 +357,33 @@ LRESULT CAIPaperMakerDlg::OnCommitPaper(WPARAM w, LPARAM l)
 		ui.DoModal();
 	}
 
+	m_pSubjectUI->DestroyWindow();
+	m_nCurSubjectIdx = 0;
+	m_nExaminationQuestionCnt = 0;
+	ClearLists();
 	return 0;
+}
+
+int CAIPaperMakerDlg::AutoMakeDisplay()
+{
+	int nTotalCnt = 0;
+	int nMakeCnt = 0;
+
+	CDBMgr mgr;
+	nTotalCnt = mgr.GetSubjectsCnt();
+
+	m_nExaminationQuestionCnt = nTotalCnt;
+	for (int i = 1; i < nTotalCnt + 1; i ++)
+	{
+		SUBJECT_CST temp;
+		if (mgr.GetSubjectByID(i, temp))
+		{
+			m_stSubjectList[nMakeCnt] = new SUBJECT_CST;
+// 			m_stUserAnswerList[nMakeCnt] = new USER_ANSWER_CST;
+			*m_stSubjectList[nMakeCnt] = &temp;
+			nMakeCnt++;
+		}
+	}
+
+	return nMakeCnt;
 }
