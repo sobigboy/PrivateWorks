@@ -11,7 +11,8 @@ public:
 
 public:
 	/*
-	* @nDifficultyDegree : 难度系数
+	* @ subject 题目
+	＊ 关于题目的相关数据库操作
 	*/
 	int AddSubject(int nDifficultyDegree, int nQuestionType,
 		TCHAR * szExaminationQuestion, 
@@ -31,8 +32,27 @@ public:
 
 	int DeleteSubjectByID(int nID);
 
+
+	/*
+	* chapter : 章节
+	*/
+	int AddChapter(TCHAR * szChapterName, TCHAR * szChapterAlias);
+	int DeleteChapter(int nID);
+	int GetChapterCnt();
+	int GetChapterByID(int nIdx, TCHAR *szChapterName, TCHAR *szChapterAlias);
+
+	/*
+	* paper : 试卷
+	*/
+	int AddPaper(TCHAR * szPaperName, int nSubjectCnt, TCHAR * szSubjectIDList);
+	int DeletePaper(int nID);
+	int GetPaperCnt();
+	int GetPaperByID(int nIdx, TCHAR * szPaperName, int *pnSubjectCnt, TCHAR * szSubjectIDList);
+
 private:
 	int CreateTable_Subject();
+	int CreateTable_User();
+	int CreateTable_Chapter();
 
 	//just for test
 	int AddTestQuestion();

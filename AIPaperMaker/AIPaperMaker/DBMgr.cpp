@@ -14,6 +14,66 @@ CDBMgr::~CDBMgr()
 {
 }
 
+int CDBMgr::CreateTable_User()
+{
+	CComnDBAMgr mgr;
+	int nRet = mgr.OpenDBA();
+	if(nRet != 0)
+	{
+		printf("CreateTable_User(): open db failed\n");
+		return nRet;
+	}
+
+	TCHAR szSql[] = _T("CREATE TABLE `user` (\
+		  `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \
+		  `account` varchar(128) NOT NULL DEFAULT '',\
+		  `pswd` varchar(128) NOT NULL DEFAULT '',\
+		  `alias` varchar(128) NOT NULL DEFAULT '',\
+		  `role` int(2) NOT NULL DEFAULT 0,\
+		  `pswd` varchar(128) NOT NULL DEFAULT '',\
+		  `timestamp` datetime DEFAULT (datetime('now', 'localtime'))\
+		  );");
+
+	nRet = mgr.ExcuteSQL(szSql);
+	if(nRet != 0)
+	{
+		printf("ExcuteSQL(): exec create table sql failed\n");
+	}
+
+	mgr.CloseDBA();
+
+	return nRet;
+
+}
+
+int CDBMgr::CreateTable_Chapter()
+{
+	CComnDBAMgr mgr;
+	int nRet = mgr.OpenDBA();
+	if(nRet != 0)
+	{
+		printf("CreateTable_Chapter(): open db failed\n");
+		return nRet;
+	}
+
+	TCHAR szSql[] = _T("CREATE TABLE `chapter` (\
+		  `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \
+		  `name` varchar(128) NOT NULL DEFAULT '',\
+		  `alias` varchar(128) NOT NULL DEFAULT '',\
+		  `timestamp` datetime DEFAULT (datetime('now', 'localtime'))\
+		  );");
+
+	nRet = mgr.ExcuteSQL(szSql);
+	if(nRet != 0)
+	{
+		printf("ExcuteSQL(): exec create table sql failed\n");
+	}
+
+	mgr.CloseDBA();
+
+	return nRet;
+}
+
 int CDBMgr::CreateTable_Subject()
 {
 	CComnDBAMgr mgr;
@@ -34,6 +94,7 @@ int CDBMgr::CreateTable_Subject()
 		  `answerC` varchar(4096) NOT NULL DEFAULT '',\
 		  `answerD` varchar(4096) NOT NULL DEFAULT '',\
 		  `right_answer` int(2) NOT NULL DEFAULT 0,\
+		  `chapter` int(2) NOT NULL DEFAULT 0,\
 		  `timestamp` datetime DEFAULT (datetime('now', 'localtime'))\
 		  );");
 
@@ -48,6 +109,38 @@ int CDBMgr::CreateTable_Subject()
 	return nRet;
 }
 
+int CDBMgr::CreateTable_Paper()
+{
+	CComnDBAMgr mgr;
+	int nRet = mgr.OpenDBA();
+	if(nRet != 0)
+	{
+		printf("CreateTable_Paper(): open db failed\n");
+		return nRet;
+	}
+
+	TCHAR szSql[] = _T("CREATE TABLE `paper` (\
+		  `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \
+		  `paper_name` varchar(128) NOT NULL DEFAULT '',\
+		  `subject_cnt` int(2) NOT NULL DEFAULT 0,\
+		  `subject_id_list` varchar(1024) NOT NULL DEFAULT '',\
+		  `timestamp` datetime DEFAULT (datetime('now', 'localtime'))\
+		  );");
+
+	nRet = mgr.ExcuteSQL(szSql);
+	if(nRet != 0)
+	{
+		printf("ExcuteSQL(): exec create table sql failed\n");
+	}
+
+	mgr.CloseDBA();
+
+	return nRet;
+}
+int CDBMgr::AddChapter()
+{
+
+}
 int CDBMgr::AddSubject(SUBJECT_T &stSubject)
 {
 
