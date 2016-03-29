@@ -122,7 +122,7 @@ int CDBMgr::CreateTable_Paper()
 	TCHAR szSql[] = _T("CREATE TABLE `paper` (\
 		  `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \
 		  `paper_name` varchar(128) NOT NULL DEFAULT '',\
-		  `subject_cnt` int(2) NOT NULL DEFAULT 0,\
+		  `subject_cnt` int(3) NOT NULL DEFAULT 0,\
 		  `subject_id_list` varchar(1024) NOT NULL DEFAULT '',\
 		  `timestamp` datetime DEFAULT (datetime('now', 'localtime'))\
 		  );");
@@ -137,10 +137,7 @@ int CDBMgr::CreateTable_Paper()
 
 	return nRet;
 }
-int CDBMgr::AddChapter()
-{
 
-}
 int CDBMgr::AddSubject(SUBJECT_T &stSubject)
 {
 
@@ -361,22 +358,6 @@ int CDBMgr::DeleteSubjectByID(int nID)
 	return nRet;
 }
 
-int CDBMgr::AddTestQuestion()
-{
-	SUBJECT_T subject = { 0 };
-
-	subject.nDifficultyDegree = 1;
-	subject.nQuestionType = 0;
-	_stprintf_s(subject.szExaminationQuestion, MAX_SUBJECT_STRING_LEN, _T("%s"), _T("question : test question?"));
-	_stprintf_s(subject.szAnswerA, MAX_SUBJECT_STRING_LEN, _T("%s"), _T("answer : a"));
-	_stprintf_s(subject.szAnswerB, MAX_SUBJECT_STRING_LEN, _T("%s"), _T("answer : b"));
-	_stprintf_s(subject.szAnswerC, MAX_SUBJECT_STRING_LEN, _T("%s"), _T("right answer : c"));
-	_stprintf_s(subject.szAnswerD, MAX_SUBJECT_STRING_LEN, _T("%s"), _T("answer : d"));
-	subject.nRightAnswer = 4;
-
-	return AddSubject(subject);
-}
-
 int CDBMgr::GetSubjectsCnt()
 {
 	CComnDBAMgr mgr;
@@ -396,5 +377,227 @@ int CDBMgr::GetSubjectsCnt()
 	return nRet;
 }
 
+int CDBMgr::AddChapter(TCHAR * szChapterName, TCHAR * szChapterAlias)
+{
+	CComnDBAMgr mgr;
+	int nRet = mgr.OpenDBA();
+	if (nRet != 0)
+	{
+		printf("AddChapter(): open db failed\n");
+		return nRet;
+	}
+
+	TCHAR szSql[1024] = { 0 };
+
+	_stprintf_s(szSql, sizeof(szSql) / sizeof(szSql[0]),
+		_T("INSERT into chapter(name, alias) VALUES(%d, %d, '%s', '%s');"), szChapterName, szChapterAlias);
+
+	nRet = mgr.ExcuteSQL(szSql);
+	if (nRet != 0)
+	{
+		printf("ExcuteSQL(): exec add subject sql failed\n");
+	}
+
+	mgr.CloseDBA();
+
+	return nRet;
+}
+
+int CDBMgr::DeleteChapterByID(int nID)
+{
+	CComnDBAMgr mgr;
+	int nRet = mgr.OpenDBA();
+	if (nRet != 0)
+	{
+		printf("DeleteChapter(): open db failed\n");
+		return nRet;
+	}
+
+	TCHAR szSql[256] = { 0 };
+	_stprintf_s(szSql, sizeof(szSql) / sizeof(szSql[0]),
+		_T("delete  from chapter where id=%d ;"), nID);
+
+	nRet = mgr.ExcuteSQL(szSql);
+	if (nRet != 0)
+	{
+		printf("ExcuteSQL(): delete chapter sql failed\n");
+	}
+
+	mgr.CloseDBA();
+
+	return nRet;
+}
+
+int CDBMgr::GetChapterCnt()
+{
+	CComnDBAMgr mgr;
+	int nRet = mgr.OpenDBA();
+	if (nRet != 0)
+	{
+		printf("GetChapterCnt(): open db failed\n");
+		return nRet;
+	}
+
+	TCHAR szSql[] = _T("select * from chapter");
+
+	mgr.InitSelectTask();
+	nRet = mgr.SelectSQL(szSql);
+	mgr.CloseDBA();
+
+	return nRet;
+}
+
+int CDBMgr::GetChapterByID(int nIdx, TCHAR *szChapterName, TCHAR *szChapterAlias)
+{
+	CComnDBAMgr mgr;
+	int nRet = mgr.OpenDBA();
+	if (nRet != 0)
+	{
+		printf("GetSubjectByID(): open db failed\n");
+		return nRet;
+	}
+
+	TCHAR szSql[256] = { 0 };
+	_stprintf_s(szSql, sizeof(szSql) / sizeof(szSql[0]),
+		_T("select * from subject where id=%d ;"), nIdx);
+
+	mgr.InitSelectTask();
+	nRet = mgr.SelectSQL(szSql);
+	mgr.MoveToFirst();
+
+	assert(nRet <= 1);
+
+	if (nRet == 1)
+	{
+		int nSizeInWords = 128;
+		mgr.GetFieldAsString(_T("name"), szChapterName, nSizeInWords);
+		mgr.GetFieldAsString(_T("alias"), szChapterAlias, nSizeInWords);
+	}
+
+	mgr.CloseDBA();
+
+	return nRet;
+}
 
 
+int CDBMgr::AddPaper(TCHAR * szPaperName, int nSubjectCnt, TCHAR * szSubjectIDList)
+{
+	CComnDBAMgr mgr;
+	int nRet = mgr.OpenDBA();
+	if (nRet != 0)
+	{
+		printf("AddPaper(): open db failed\n");
+		return nRet;
+	}
+
+	TCHAR szSql[1024] = { 0 };
+	_stprintf_s(szSql, sizeof(szSql) / sizeof(szSql[0]),
+		_T("INSERT into paper(paper_name, subject_cnt, subject_id_list) VALUES('%s', %d, '%s');"), szPaperName, nSubjectCnt, szSubjectIDList);
+
+	nRet = mgr.ExcuteSQL(szSql);
+	if (nRet != 0)
+	{
+		printf("ExcuteSQL(): exec add paper sql failed\n");
+	}
+
+	mgr.CloseDBA();
+
+	return nRet;
+}
+
+int CDBMgr::DeletePaperByID(int nID)
+{
+	CComnDBAMgr mgr;
+	int nRet = mgr.OpenDBA();
+	if (nRet != 0)
+	{
+		printf("DeleteChapter(): open db failed\n");
+		return nRet;
+	}
+
+	TCHAR szSql[256] = { 0 };
+	_stprintf_s(szSql, sizeof(szSql) / sizeof(szSql[0]),
+		_T("delete  from paper where id=%d ;"), nID);
+
+	nRet = mgr.ExcuteSQL(szSql);
+	if (nRet != 0)
+	{
+		printf("ExcuteSQL(): delete paper sql failed\n");
+	}
+
+	mgr.CloseDBA();
+
+	return nRet;
+}
+
+int CDBMgr::GetPaperCnt()
+{
+	CComnDBAMgr mgr;
+	int nRet = mgr.OpenDBA();
+	if (nRet != 0)
+	{
+		printf("GetPaperCnt(): open db failed\n");
+		return nRet;
+	}
+
+	TCHAR szSql[] = _T("select * from paper");
+
+	mgr.InitSelectTask();
+	nRet = mgr.SelectSQL(szSql);
+	mgr.CloseDBA();
+
+	return nRet;
+}
+
+int CDBMgr::GetPaperByID(int nIdx, TCHAR * szPaperName, int *pnSubjectCnt, TCHAR * szSubjectIDList)
+{
+	CComnDBAMgr mgr;
+	int nRet = mgr.OpenDBA();
+	if (nRet != 0)
+	{
+		printf("GetPaperByID(): open db failed\n");
+		return nRet;
+	}
+
+	TCHAR szSql[256] = { 0 };
+	_stprintf_s(szSql, sizeof(szSql) / sizeof(szSql[0]),
+		_T("select * from paper where id=%d ;"), nIdx);
+
+	mgr.InitSelectTask();
+	nRet = mgr.SelectSQL(szSql);
+	mgr.MoveToFirst();
+
+	assert(nRet <= 1);
+
+	if (nRet == 1)
+	{
+		int nSizeInWords = 128;
+		*pnSubjectCnt = mgr.GetFieldAsInt32(_T("subject_cnt"));
+		mgr.GetFieldAsString(_T("paper_name"), szPaperName, nSizeInWords);
+		mgr.GetFieldAsString(_T("subject_id_list"), szSubjectIDList, nSizeInWords);
+	}
+
+	mgr.CloseDBA();
+
+	return nRet;
+}
+
+
+
+
+////
+int CDBMgr::AddTestQuestion()
+{
+	SUBJECT_T subject = { 0 };
+
+	subject.nDifficultyDegree = 1;
+	subject.nQuestionType = 0;
+	_stprintf_s(subject.szExaminationQuestion, MAX_SUBJECT_STRING_LEN, _T("%s"), _T("question : test question?"));
+	_stprintf_s(subject.szAnswerA, MAX_SUBJECT_STRING_LEN, _T("%s"), _T("answer : a"));
+	_stprintf_s(subject.szAnswerB, MAX_SUBJECT_STRING_LEN, _T("%s"), _T("answer : b"));
+	_stprintf_s(subject.szAnswerC, MAX_SUBJECT_STRING_LEN, _T("%s"), _T("right answer : c"));
+	_stprintf_s(subject.szAnswerD, MAX_SUBJECT_STRING_LEN, _T("%s"), _T("answer : d"));
+	subject.nRightAnswer = 4;
+
+	return AddSubject(subject);
+}

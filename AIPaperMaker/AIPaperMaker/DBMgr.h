@@ -37,7 +37,7 @@ public:
 	* chapter : уб╫з
 	*/
 	int AddChapter(TCHAR * szChapterName, TCHAR * szChapterAlias);
-	int DeleteChapter(int nID);
+	int DeleteChapterByID(int nID);
 	int GetChapterCnt();
 	int GetChapterByID(int nIdx, TCHAR *szChapterName, TCHAR *szChapterAlias);
 
@@ -45,7 +45,7 @@ public:
 	* paper : йт╬М
 	*/
 	int AddPaper(TCHAR * szPaperName, int nSubjectCnt, TCHAR * szSubjectIDList);
-	int DeletePaper(int nID);
+	int DeletePaperByID(int nID);
 	int GetPaperCnt();
 	int GetPaperByID(int nIdx, TCHAR * szPaperName, int *pnSubjectCnt, TCHAR * szSubjectIDList);
 
@@ -53,6 +53,7 @@ private:
 	int CreateTable_Subject();
 	int CreateTable_User();
 	int CreateTable_Chapter();
+	int CreateTable_Paper();
 
 	//just for test
 	int AddTestQuestion();
