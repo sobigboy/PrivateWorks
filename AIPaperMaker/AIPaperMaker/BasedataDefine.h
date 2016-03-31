@@ -3,6 +3,7 @@
 
 #include "CommonDBA.h"
 
+#define MAX_USER_ACCOUNT_LEN			(128)
 
 #define MIN_ANSWERQUESTION_CNT	(5)
 #define MAX_ANSWERQUESTION_CNT (50)
@@ -34,6 +35,13 @@ typedef struct _statistic_info
 	}
 }STATISTIC_INFO;
 
+typedef enum e_user_role
+{
+	role_admin = 0,
+	role_teacher,
+	role_student
+}E_USER_ROLE;
+
 typedef enum e_status
 {
 	e_add_subject = 0,
@@ -41,11 +49,20 @@ typedef enum e_status
 	e_answer_subject
 }E_STATUS;
 
+typedef struct _user_t
+{
+	E_STATUS eRole;
+	TCHAR szAccount[MAX_USER_ACCOUNT_LEN];
+	TCHAR szAlias[MAX_USER_ACCOUNT_LEN];
+	TCHAR szPasswd[MAX_USER_ACCOUNT_LEN];
+}USER_T;
+
 typedef struct _subject_cst
 {
 	int nSubjectID;
 	int nDifficultyDegree;
 	int nQuestionType;
+	int nChapterID;
 	CString szExaminationQuestion;
 	CString szAnswerA;
 	CString szAnswerB;
@@ -58,6 +75,7 @@ typedef struct _subject_cst
 		nSubjectID = 0;
 		nDifficultyDegree = 0;
 		nQuestionType = 0;
+		nChapterID = 0;
 		szExaminationQuestion = _T("");
 		szAnswerA = _T("");
 		szAnswerB = _T("");
@@ -71,6 +89,7 @@ typedef struct _subject_cst
 		nSubjectID = cs->nSubjectID;
 		nDifficultyDegree = cs->nDifficultyDegree;
 		nQuestionType = cs->nQuestionType;
+		nChapterID = cs->nChapterID;
 		szExaminationQuestion = cs->szExaminationQuestion;
 		szAnswerA = cs->szAnswerA;
 		szAnswerB = cs->szAnswerB;
@@ -131,6 +150,7 @@ typedef struct _subject_t
 	int nSubjectID;
 	int nDifficultyDegree;
 	int nQuestionType;
+	int nChapterID;
 	TCHAR szExaminationQuestion[MAX_SUBJECT_STRING_LEN];
 	TCHAR szAnswerA[MAX_SUBJECT_STRING_LEN];
 	TCHAR szAnswerB[MAX_SUBJECT_STRING_LEN];
@@ -143,6 +163,7 @@ typedef struct _subject_t
 		nSubjectID = cs.nSubjectID;
 		nDifficultyDegree = cs.nDifficultyDegree;
 		nQuestionType = cs.nQuestionType;
+		nChapterID = cs.nChapterID;
 		_stprintf_s(szExaminationQuestion, _T("%s"), cs.szExaminationQuestion.GetString());
 		_stprintf_s(szAnswerA, _T("%s"), cs.szAnswerA.GetString());
 		_stprintf_s(szAnswerB, _T("%s"), cs.szAnswerB.GetString());

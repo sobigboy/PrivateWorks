@@ -30,7 +30,6 @@ int CDBMgr::CreateTable_User()
 		  `pswd` varchar(128) NOT NULL DEFAULT '',\
 		  `alias` varchar(128) NOT NULL DEFAULT '',\
 		  `role` int(2) NOT NULL DEFAULT 0,\
-		  `pswd` varchar(128) NOT NULL DEFAULT '',\
 		  `timestamp` datetime DEFAULT (datetime('now', 'localtime'))\
 		  );");
 
@@ -94,7 +93,7 @@ int CDBMgr::CreateTable_Subject()
 		  `answerC` varchar(4096) NOT NULL DEFAULT '',\
 		  `answerD` varchar(4096) NOT NULL DEFAULT '',\
 		  `right_answer` int(2) NOT NULL DEFAULT 0,\
-		  `chapter` int(2) NOT NULL DEFAULT 0,\
+		  `chapter_id` int(2) NOT NULL DEFAULT 0,\
 		  `timestamp` datetime DEFAULT (datetime('now', 'localtime'))\
 		  );");
 
@@ -138,6 +137,7 @@ int CDBMgr::CreateTable_Paper()
 	return nRet;
 }
 
+
 int CDBMgr::AddSubject(SUBJECT_T &stSubject)
 {
 
@@ -152,9 +152,9 @@ int CDBMgr::AddSubject(SUBJECT_T &stSubject)
 	TCHAR szSql[1024] = { 0 };
 	
 	_stprintf_s(szSql, sizeof(szSql) / sizeof(szSql[0]),
-		_T("INSERT into subject(difficulty_degree, question_type, examination_question,answerA, answerB, answerC, answerD, right_answer) VALUES(%d, %d, '%s', '%s', '%s', '%s', '%s', %d);"),
+		_T("INSERT into subject(difficulty_degree, question_type, examination_question,answerA, answerB, answerC, answerD, right_answer, chapter_id) VALUES(%d, %d, '%s', '%s', '%s', '%s', '%s', %d, %d);"),
 		stSubject.nDifficultyDegree, stSubject.nQuestionType, stSubject.szExaminationQuestion, 
-		stSubject.szAnswerA, stSubject.szAnswerB, stSubject.szAnswerC, stSubject.szAnswerD, stSubject.nRightAnswer);
+		stSubject.szAnswerA, stSubject.szAnswerB, stSubject.szAnswerC, stSubject.szAnswerD, stSubject.nRightAnswer, stSubject.nChapterID);
 
 	nRet = mgr.ExcuteSQL(szSql);
 	if(nRet != 0)
@@ -170,7 +170,7 @@ int CDBMgr::AddSubject(SUBJECT_T &stSubject)
 int CDBMgr::AddSubject(int nDifficultyDegree, int nQuestionType,
 		TCHAR * szExaminationQuestion, 
 		TCHAR* szAnswerA, TCHAR* szAnswerB, TCHAR* szAnswerC, TCHAR* szAnswerD,
-		int nRightAnswer)
+		int nRightAnswer, int nChapterID)
 {
 	CComnDBAMgr mgr;
 	int nRet = mgr.OpenDBA();
@@ -183,8 +183,8 @@ int CDBMgr::AddSubject(int nDifficultyDegree, int nQuestionType,
 	TCHAR szSql[1024] = { 0 };
 	
 	_stprintf_s(szSql, sizeof(szSql) / sizeof(szSql[0]),
-		_T("INSERT into subject(difficulty_degree, question_type, examination_question,answerA, answerB, answerC, answerD, right_answer) VALUES(%d, %d, '%s', '%s', '%s', '%s', '%s', %d);"),
-		nDifficultyDegree, nQuestionType, szExaminationQuestion, szAnswerA, szAnswerB, szAnswerC, szAnswerD, nRightAnswer);
+		_T("INSERT into subject(difficulty_degree, question_type, examination_question,answerA, answerB, answerC, answerD, right_answer, chapter_id) VALUES(%d, %d, '%s', '%s', '%s', '%s', '%s', %d, %d);"),
+		nDifficultyDegree, nQuestionType, szExaminationQuestion, szAnswerA, szAnswerB, szAnswerC, szAnswerD, nRightAnswer, nChapterID);
 
 	nRet = mgr.ExcuteSQL(szSql);
 	if(nRet != 0)
@@ -240,6 +240,7 @@ int CDBMgr::GetSubjectByID(int nID, SUBJECT_T &stSubject)
 		stSubject.nDifficultyDegree = mgr.GetFieldAsInt32(_T("difficulty_degree"));
 		stSubject.nQuestionType = mgr.GetFieldAsInt32(_T("question_type"));
 		stSubject.nRightAnswer = mgr.GetFieldAsInt32(_T("right_answer"));
+		stSubject.nChapterID = mgr.GetFieldAsInt32(_T("chapter_id"));
 
 		int nSizeInWords = sizeof(stSubject.szExaminationQuestion) / sizeof(stSubject.szExaminationQuestion[0]);
 
@@ -247,7 +248,7 @@ int CDBMgr::GetSubjectByID(int nID, SUBJECT_T &stSubject)
 		mgr.GetFieldAsString(_T("answerA"), stSubject.szAnswerA, nSizeInWords);
 		mgr.GetFieldAsString(_T("answerB"), stSubject.szAnswerB, nSizeInWords);
 		mgr.GetFieldAsString(_T("answerC"), stSubject.szAnswerC, nSizeInWords);
-		mgr.GetFieldAsString(_T("answerD"), stSubject.szAnswerD, nSizeInWords);
+		mgr.GetFieldAsString(_T("answerD"), stSubject.szAnswerD, nSizeInWords); 
 
 	}
 
@@ -275,6 +276,7 @@ int CDBMgr::GetSubjectByID(int nID, SUBJECT_CST &stSubjectCS)
 	stSubjectCS.szAnswerC = stSubject.szAnswerC;
 	stSubjectCS.szAnswerD = stSubject.szAnswerD;
 	stSubjectCS.nRightAnswer = stSubject.nRightAnswer;
+	stSubjectCS.nChapterID = stSubject.nChapterID;
 	return nRet;
 }
 

@@ -11,13 +11,22 @@ public:
 
 public:
 	/*
+	* @ user
+	* 关于用户信息
+	*1.用户角色 2.用户账号 3.用户姓名 4.用户密码
+	*/
+	int AddUser(USER_T &stUser);
+	int DeleteUserByAccount(TCHAR szAccount);
+	int CheckUser(USER_T &stUser);
+
+	/*
 	* @ subject 题目
 	＊ 关于题目的相关数据库操作
 	*/
 	int AddSubject(int nDifficultyDegree, int nQuestionType,
 		TCHAR * szExaminationQuestion, 
 		TCHAR* szAnswerA, TCHAR* szAnswerB, TCHAR* szAnswerC, TCHAR* szAnswerD,
-		int nRightAnswer);
+		int nRightAnswer, int nChapterID);
 
 	int AddSubject(SUBJECT_T &stSubject);
 	int GetSubjectByID(int nID, SUBJECT_T &stSuject);
