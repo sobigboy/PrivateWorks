@@ -207,10 +207,6 @@ void CAIPaperMakerDlg::OnBnClickedBtnAnswer()
 
 void CAIPaperMakerDlg::OnBnClickedBtnAdd()
 {
-	ClearLists();
-	SelectMode(e_add_subject);
-
-	return;
 	// 首先验证身份，管理员/老师 才能添加题库
 	USER_T user ;
 	ZeroMemory(&user, sizeof(USER_T));
