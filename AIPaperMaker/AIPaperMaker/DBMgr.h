@@ -48,7 +48,7 @@ public:
 	int AddChapter(TCHAR * szChapterName, TCHAR * szChapterAlias);
 	int DeleteChapterByID(int nID);
 	int GetChapterCnt();
-	int GetChapterByID(int nIdx, TCHAR *szChapterName, TCHAR *szChapterAlias);
+	int GetChapterByID(int nID, TCHAR *szChapterName, TCHAR *szChapterAlias);
 
 	/*
 	* paper : йт╬М
@@ -56,7 +56,7 @@ public:
 	int AddPaper(TCHAR * szPaperName, int nSubjectCnt, TCHAR * szSubjectIDList);
 	int DeletePaperByID(int nID);
 	int GetPaperCnt();
-	int GetPaperByID(int nIdx, TCHAR * szPaperName, int *pnSubjectCnt, TCHAR * szSubjectIDList);
+	int GetPaperByID(int nID, TCHAR * szPaperName, int *pnSubjectCnt, TCHAR * szSubjectIDList);
 
 private:
 	int CreateTable_Subject();

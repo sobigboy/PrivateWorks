@@ -328,6 +328,8 @@ int CAIPaperMakerDlg::AutoMakePapers(int nSelectionSubCnt, int nFillSubCnt)
 			*m_stSubjectList[nMakeCnt] = &temp;
 			nMakeCnt++;
 		}
+		else
+			nTotalCnt++;
 	}
 
 	return nMakeCnt;
@@ -379,11 +381,12 @@ int CAIPaperMakerDlg::AutoMakeDisplay()
 		if (mgr.GetSubjectByID(i, temp))
 		{
 			m_stSubjectList[nMakeCnt] = new SUBJECT_CST;
-// 			m_stUserAnswerList[nMakeCnt] = new USER_ANSWER_CST;
+			// 			m_stUserAnswerList[nMakeCnt] = new USER_ANSWER_CST;
 			*m_stSubjectList[nMakeCnt] = &temp;
 			nMakeCnt++;
 		}
+		else
+			nTotalCnt++;
 	}
-
 	return nMakeCnt;
 }

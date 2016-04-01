@@ -119,13 +119,15 @@ void CSubjectUI::InitCtrl()
 	CDBMgr dbMgr;
 	int nCnt = dbMgr.GetChapterCnt();
 
+	m_cbChapter.Clear();
 	for (int i = 0; i < nCnt; i++)
 	{
 		TCHAR szName[MAX_USER_ACCOUNT_LEN] = { 0 };
 		TCHAR szAlias[MAX_USER_ACCOUNT_LEN] = { 0 };
-		dbMgr.GetChapterByID(i, szName, szAlias);
-		// insert into comboBox
-
+		if (dbMgr.GetChapterByID(i + 1, szName, szAlias) > 0)
+			m_cbChapter.InsertString(i, szName);
+		else
+			nCnt++;
 	}
 
 	if (!m_cbQustionType.GetSafeHwnd())

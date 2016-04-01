@@ -6,6 +6,9 @@
 CDBMgr::CDBMgr()
 {
 	CreateTable_Subject();
+	CreateTable_User();
+	CreateTable_Chapter();
+	CreateTable_Paper();
  	//AddTestQuestion();
 
 }
@@ -228,15 +231,6 @@ int CDBMgr::GetSubjectByID(int nID, SUBJECT_T &stSubject)
 	if (nRet == 1)
 	{
 		stSubject.nSubjectID = nID;
-	}
-	else
-	{
-		mgr.CloseDBA();
-		return -1;
-	}
-
-	for(int i = 0; i < nRet; i++)
-	{
 		stSubject.nDifficultyDegree = mgr.GetFieldAsInt32(_T("difficulty_degree"));
 		stSubject.nQuestionType = mgr.GetFieldAsInt32(_T("question_type"));
 		stSubject.nRightAnswer = mgr.GetFieldAsInt32(_T("right_answer"));
@@ -248,8 +242,7 @@ int CDBMgr::GetSubjectByID(int nID, SUBJECT_T &stSubject)
 		mgr.GetFieldAsString(_T("answerA"), stSubject.szAnswerA, nSizeInWords);
 		mgr.GetFieldAsString(_T("answerB"), stSubject.szAnswerB, nSizeInWords);
 		mgr.GetFieldAsString(_T("answerC"), stSubject.szAnswerC, nSizeInWords);
-		mgr.GetFieldAsString(_T("answerD"), stSubject.szAnswerD, nSizeInWords); 
-
+		mgr.GetFieldAsString(_T("answerD"), stSubject.szAnswerD, nSizeInWords);
 	}
 
 	mgr.CloseDBA();
@@ -264,7 +257,7 @@ int CDBMgr::GetSubjectByID(int nID, SUBJECT_CST &stSubjectCS)
 	
 	nRet = GetSubjectByID(nID, stSubject);
 
-	if (nRet < 0)
+	if (nRet <= 0)
 		return nRet;
 
 	stSubjectCS.nSubjectID = stSubject.nSubjectID;
@@ -449,7 +442,7 @@ int CDBMgr::GetChapterCnt()
 	return nRet;
 }
 
-int CDBMgr::GetChapterByID(int nIdx, TCHAR *szChapterName, TCHAR *szChapterAlias)
+int CDBMgr::GetChapterByID(int nID, TCHAR *szChapterName, TCHAR *szChapterAlias)
 {
 	CComnDBAMgr mgr;
 	int nRet = mgr.OpenDBA();
@@ -461,7 +454,7 @@ int CDBMgr::GetChapterByID(int nIdx, TCHAR *szChapterName, TCHAR *szChapterAlias
 
 	TCHAR szSql[256] = { 0 };
 	_stprintf_s(szSql, sizeof(szSql) / sizeof(szSql[0]),
-		_T("select * from subject where id=%d ;"), nIdx);
+		_T("select * from chapter where id=%d ;"), nID);
 
 	mgr.InitSelectTask();
 	nRet = mgr.SelectSQL(szSql);
@@ -472,6 +465,7 @@ int CDBMgr::GetChapterByID(int nIdx, TCHAR *szChapterName, TCHAR *szChapterAlias
 	if (nRet == 1)
 	{
 		int nSizeInWords = 128;
+
 		mgr.GetFieldAsString(_T("name"), szChapterName, nSizeInWords);
 		mgr.GetFieldAsString(_T("alias"), szChapterAlias, nSizeInWords);
 	}
@@ -550,7 +544,7 @@ int CDBMgr::GetPaperCnt()
 	return nRet;
 }
 
-int CDBMgr::GetPaperByID(int nIdx, TCHAR * szPaperName, int *pnSubjectCnt, TCHAR * szSubjectIDList)
+int CDBMgr::GetPaperByID(int nID, TCHAR * szPaperName, int *pnSubjectCnt, TCHAR * szSubjectIDList)
 {
 	CComnDBAMgr mgr;
 	int nRet = mgr.OpenDBA();
@@ -562,7 +556,7 @@ int CDBMgr::GetPaperByID(int nIdx, TCHAR * szPaperName, int *pnSubjectCnt, TCHAR
 
 	TCHAR szSql[256] = { 0 };
 	_stprintf_s(szSql, sizeof(szSql) / sizeof(szSql[0]),
-		_T("select * from paper where id=%d ;"), nIdx);
+		_T("select * from paper where id=%d ;"), nID);
 
 	mgr.InitSelectTask();
 	nRet = mgr.SelectSQL(szSql);
