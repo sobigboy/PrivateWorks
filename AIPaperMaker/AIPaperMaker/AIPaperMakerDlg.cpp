@@ -7,7 +7,7 @@
 #include "AIPaperMakerDlg.h"
 #include "afxdialogex.h"
 #include "StatisticInfoUI.h"
-
+#include "LoginUI.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -110,6 +110,8 @@ BOOL CAIPaperMakerDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 设置大图标
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
+	CDBMgr dbMgr;
+	dbMgr.InitializeAllTable();
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -177,6 +179,15 @@ HCURSOR CAIPaperMakerDlg::OnQueryDragIcon()
 
 void CAIPaperMakerDlg::OnBnClickedBtnAnswer()
 {
+	// 填空题题数
+	int nFillSubjectNum = 5;
+
+	// 选择题题数
+	int nSelectionSubjectNum = 5;
+	m_nExaminationQuestionCnt = nFillSubjectNum + nSelectionSubjectNum;
+
+
+	// 验证数据库中题库数目
 	CDBMgr mgr;
 	int nRet = mgr.GetSubjectsCnt();
 	if (nRet < m_nExaminationQuestionCnt)
@@ -185,10 +196,8 @@ void CAIPaperMakerDlg::OnBnClickedBtnAnswer()
 		return;
 	}
 
-	int nN = 3;
-	int nM = 3;
-	m_nExaminationQuestionCnt = nN + nM;
-	nRet = AutoMakePapers(nN, nM);
+	// 开始智能生成试卷
+	nRet = AutoMakePapers(nFillSubjectNum, nSelectionSubjectNum);
 
 	if (nRet > 0)
 		SelectMode(e_answer_subject);
@@ -200,6 +209,27 @@ void CAIPaperMakerDlg::OnBnClickedBtnAdd()
 {
 	ClearLists();
 	SelectMode(e_add_subject);
+
+	return;
+	// 首先验证身份，管理员/老师 才能添加题库
+	USER_T user ;
+	ZeroMemory(&user, sizeof(USER_T));
+	CLoginUI ui(&user);
+
+	if (IDOK == ui.DoModal())
+	{
+		CDBMgr mgr;
+		if(mgr.CheckUser(user))
+		{
+			ClearLists();
+			SelectMode(e_add_subject);
+		}
+		else
+		{
+			AfxMessageBox(_T("身份验证失败"));
+		}
+	}
+
 }
 
 void CAIPaperMakerDlg::OnBnClickedBtnDisplay()

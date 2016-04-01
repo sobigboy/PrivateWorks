@@ -38,9 +38,11 @@ void CSubjectUI::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC_DUR_FLAG, m_staticDurFlag);
 	DDX_Control(pDX, IDC_COMBO_CHAPTER, m_cbChapter);
 
+	if (!m_pstSubjectCS)
+		return;
 	DDX_CBIndex(pDX, IDC_COMBO_DIF_DEGREE, m_pstSubjectCS->nDifficultyDegree);
 	DDX_CBIndex(pDX, IDC_COMBO_QUESTION_TYPE, m_pstSubjectCS->nQuestionType);
-	DDX_CBIndex(pDX, IDC_COMBO_CHAPTER, m_pstSubjectCS->nChapterID);
+// 	DDX_CBIndex(pDX, IDC_COMBO_CHAPTER, m_pstSubjectCS->nChapterID);
 
 	DDX_Text(pDX, IDC_EDIT_TITLE, m_pstSubjectCS->szExaminationQuestion);
 
@@ -155,6 +157,8 @@ void CSubjectUI::InitCtrl()
 		m_cbDifDegree.SetCurSel(0);
 		m_cbQustionType.EnableWindow(TRUE);
 		m_cbDifDegree.EnableWindow(TRUE);
+		m_cbChapter.SetCurSel(0);
+		m_cbChapter.EnableWindow(TRUE);
 		GetDlgItem(ID_BTN_PRESUB)->ShowWindow(SW_HIDE);
 		m_staticDuration.ShowWindow(SW_HIDE);
 		m_staticDurFlag.ShowWindow(SW_HIDE);
@@ -165,6 +169,7 @@ void CSubjectUI::InitCtrl()
 		SetWindowText(_T("展示题库"));
 		m_cbQustionType.EnableWindow(FALSE);
 		m_cbDifDegree.EnableWindow(FALSE);
+		m_cbChapter.EnableWindow(FALSE);
 		GetDlgItem(ID_BTN_PRESUB)->ShowWindow(SW_SHOW);
 		m_staticDuration.ShowWindow(SW_HIDE);
 		m_staticDurFlag.ShowWindow(SW_HIDE);
@@ -175,6 +180,7 @@ void CSubjectUI::InitCtrl()
 		SetWindowText(_T("答题"));
 		m_cbQustionType.EnableWindow(FALSE);
 		m_cbDifDegree.EnableWindow(FALSE);
+		m_cbChapter.EnableWindow(FALSE);
 		GetDlgItem(ID_BTN_PRESUB)->ShowWindow(SW_SHOW);
 		m_staticDuration.ShowWindow(SW_SHOW);
 		m_staticDurFlag.ShowWindow(SW_SHOW);
@@ -241,6 +247,11 @@ bool CSubjectUI::CommitAnswerSubject()
 
 void CSubjectUI::UpdateCtrl(BOOL bSaved)
 {
+	if (bSaved)
+		m_pstSubjectCS->nChapterID = m_cbChapter.GetCurSel() + 1;
+	else
+		m_cbChapter.SetCurSel(m_pstSubjectCS->nChapterID - 1);
+
 	if (m_enumStatus == e_add_subject || m_enumStatus == e_display_subject)
 	{
 		if (bSaved)

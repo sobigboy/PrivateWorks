@@ -51,8 +51,11 @@
     <ClInclude Include="BasedataDefine.h">
       <Filter>DBMgr</Filter>
     </ClInclude>
+    <ClInclude Include="LoginUI.h">
+      <Filter>UI</Filter>
+    </ClInclude>
     <ClInclude Include="StatisticInfoUI.h">
-      <Filter>头文件</Filter>
+      <Filter>UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -71,8 +74,11 @@
     <ClCompile Include="SubjectUI.cpp">
       <Filter>UI</Filter>
     </ClCompile>
+    <ClCompile Include="LoginUI.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
     <ClCompile Include="StatisticInfoUI.cpp">
-      <Filter>源文件</Filter>
+      <Filter>UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

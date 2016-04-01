@@ -10,6 +10,9 @@ public:
 	virtual ~CDBMgr();
 
 public:
+
+	int InitializeAllTable();
+
 	/*
 	* @ user
 	* 关于用户信息
@@ -18,18 +21,24 @@ public:
 	int AddUser(USER_T &stUser);
 	int DeleteUserByAccount(TCHAR szAccount);
 	int CheckUser(USER_T &stUser);
+	int GetUserCnt();
 
 	/*
 	* @ subject 题目
 	＊ 关于题目的相关数据库操作
 	*/
+	// 添加题库
 	int AddSubject(int nDifficultyDegree, int nQuestionType,
 		TCHAR * szExaminationQuestion, 
 		TCHAR* szAnswerA, TCHAR* szAnswerB, TCHAR* szAnswerC, TCHAR* szAnswerD,
 		int nRightAnswer, int nChapterID);
 
 	int AddSubject(SUBJECT_T &stSubject);
+
+	// 通过ID号获取题目
 	int GetSubjectByID(int nID, SUBJECT_T &stSuject);
+
+	// 检查答案得分
 	int CheckAnswer(USER_ANSWER_T &stUserAnswer, SUBJECT_T *pstSubject = NULL);
 
 	int AddSubject(SUBJECT_CST &stSubjectCS);
@@ -37,8 +46,10 @@ public:
 	int CheckAnswer(USER_ANSWER_CST &stUserAnswerCS);
 	int CheckAnswer(USER_ANSWER_CST &stUserAnswerCS, SUBJECT_CST &stSubjectCS);
 
+	// 获取题库的题目数量
 	int GetSubjectsCnt();
 
+	// 删除题库中题目
 	int DeleteSubjectByID(int nID);
 
 

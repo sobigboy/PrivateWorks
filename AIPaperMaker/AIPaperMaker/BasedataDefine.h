@@ -75,7 +75,7 @@ typedef struct _subject_cst
 		nSubjectID = 0;
 		nDifficultyDegree = 0;
 		nQuestionType = 0;
-		nChapterID = 0;
+		nChapterID = 1;
 		szExaminationQuestion = _T("");
 		szAnswerA = _T("");
 		szAnswerB = _T("");

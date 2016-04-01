@@ -5,12 +5,6 @@
 
 CDBMgr::CDBMgr()
 {
-	CreateTable_Subject();
-	CreateTable_User();
-	CreateTable_Chapter();
-	CreateTable_Paper();
- 	//AddTestQuestion();
-
 }
 
 CDBMgr::~CDBMgr()
@@ -44,6 +38,18 @@ int CDBMgr::CreateTable_User()
 
 	mgr.CloseDBA();
 
+	//初始化用户数据库
+	CDBMgr dbMgr;
+	if (dbMgr.GetUserCnt() == 0)
+	{
+		USER_T user;
+		user.eRole = role_admin;
+		_stprintf_s(user.szAccount, sizeof(user.szAccount) / sizeof(user.szAccount[0]), _T("%s"), _T("admin"));
+		_stprintf_s(user.szAlias, sizeof(user.szAlias) / sizeof(user.szAlias[0]), _T("%s"), _T("管理员"));
+		_stprintf_s(user.szPasswd, sizeof(user.szPasswd) / sizeof(user.szPasswd[0]), _T("%s"), _T("admin"));
+		dbMgr.AddUser(user);
+	}
+
 	return nRet;
 
 }
@@ -73,6 +79,21 @@ int CDBMgr::CreateTable_Chapter()
 
 	mgr.CloseDBA();
 
+
+	//初始化章节数据库
+	CDBMgr dbMgr;
+	if (dbMgr.GetChapterCnt() == 0)
+	{
+		dbMgr.AddChapter(_T("第一章"), _T("Chapter 1"));
+		dbMgr.AddChapter(_T("第二章"), _T("Chapter 2"));
+		dbMgr.AddChapter(_T("第三章"), _T("Chapter 3"));
+		dbMgr.AddChapter(_T("第四章"), _T("Chapter 4"));
+		dbMgr.AddChapter(_T("第五章"), _T("Chapter 5"));
+		dbMgr.AddChapter(_T("第六章"), _T("Chapter 6"));
+		dbMgr.AddChapter(_T("第七章"), _T("Chapter 7"));
+		dbMgr.AddChapter(_T("第八章"), _T("Chapter 8"));
+	}
+
 	return nRet;
 }
 
@@ -96,7 +117,7 @@ int CDBMgr::CreateTable_Subject()
 		  `answerC` varchar(4096) NOT NULL DEFAULT '',\
 		  `answerD` varchar(4096) NOT NULL DEFAULT '',\
 		  `right_answer` int(2) NOT NULL DEFAULT 0,\
-		  `chapter_id` int(2) NOT NULL DEFAULT 0,\
+		  `chapter_id` int(2) NOT NULL DEFAULT 1,\
 		  `timestamp` datetime DEFAULT (datetime('now', 'localtime'))\
 		  );");
 
@@ -385,7 +406,7 @@ int CDBMgr::AddChapter(TCHAR * szChapterName, TCHAR * szChapterAlias)
 	TCHAR szSql[1024] = { 0 };
 
 	_stprintf_s(szSql, sizeof(szSql) / sizeof(szSql[0]),
-		_T("INSERT into chapter(name, alias) VALUES(%d, %d, '%s', '%s');"), szChapterName, szChapterAlias);
+		_T("INSERT into chapter(name, alias) VALUES('%s', '%s');"), szChapterName, szChapterAlias);
 
 	nRet = mgr.ExcuteSQL(szSql);
 	if (nRet != 0)
@@ -687,5 +708,35 @@ int CDBMgr::AddTestQuestion()
 	subject.nRightAnswer = 4;
 
 	return AddSubject(subject);
+}
+
+int CDBMgr::GetUserCnt()
+{
+	CComnDBAMgr mgr;
+	int nRet = mgr.OpenDBA();
+	if (nRet != 0)
+	{
+		printf("GetUserCnt(): open db failed\n");
+		return nRet;
+	}
+
+	TCHAR szSql[] = _T("select * from user");
+
+	mgr.InitSelectTask();
+	nRet = mgr.SelectSQL(szSql);
+	mgr.CloseDBA();
+
+	return nRet;
+}
+
+int CDBMgr::InitializeAllTable()
+{
+	CreateTable_Subject();
+	CreateTable_User();
+	CreateTable_Chapter();
+	CreateTable_Paper();
+	//AddTestQuestion();
+
+	return 0;
 }
 

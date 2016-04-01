@@ -122,6 +122,7 @@ xcopy DBMgr\*.dll ..\Bin\$(Configuration) /s/y</Command>
     <ClInclude Include="BasedataDefine.h" />
     <ClInclude Include="DBMgr.h" />
     <ClInclude Include="DBMgr\CommonDBA.h" />
+    <ClInclude Include="LoginUI.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="StatisticInfoUI.h" />
     <ClInclude Include="stdafx.h" />
@@ -132,6 +133,7 @@ xcopy DBMgr\*.dll ..\Bin\$(Configuration) /s/y</Command>
     <ClCompile Include="AIPaperMaker.cpp" />
     <ClCompile Include="AIPaperMakerDlg.cpp" />
     <ClCompile Include="DBMgr.cpp" />
+    <ClCompile Include="LoginUI.cpp" />
     <ClCompile Include="StatisticInfoUI.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
