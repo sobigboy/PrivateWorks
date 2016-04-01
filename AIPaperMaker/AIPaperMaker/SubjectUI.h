@@ -1,4 +1,8 @@
 #pragma once
+/*
+*	CSubjectUI
+*  负责用户界面交互逻辑
+*/
 
 #include "DBMgr.h"
 #include "afxwin.h"
@@ -53,4 +57,5 @@ public:
 	afx_msg void OnDestroy();
 	CStatic m_staticDuration;
 	CStatic m_staticDurFlag;
+	CComboBox m_cbChapter;
 };

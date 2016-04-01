@@ -34,9 +34,13 @@ void CSubjectUI::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CHECK2, m_btnAnsB);
 	DDX_Control(pDX, IDC_CHECK3, m_btnAnsC);
 	DDX_Control(pDX, IDC_CHECK4, m_btnAnsD);
+	DDX_Control(pDX, IDC_STATIC_DURATION, m_staticDuration);
+	DDX_Control(pDX, IDC_STATIC_DUR_FLAG, m_staticDurFlag);
+	DDX_Control(pDX, IDC_COMBO_CHAPTER, m_cbChapter);
 
 	DDX_CBIndex(pDX, IDC_COMBO_DIF_DEGREE, m_pstSubjectCS->nDifficultyDegree);
 	DDX_CBIndex(pDX, IDC_COMBO_QUESTION_TYPE, m_pstSubjectCS->nQuestionType);
+	DDX_CBIndex(pDX, IDC_COMBO_CHAPTER, m_pstSubjectCS->nChapterID);
 
 	DDX_Text(pDX, IDC_EDIT_TITLE, m_pstSubjectCS->szExaminationQuestion);
 
@@ -55,8 +59,6 @@ void CSubjectUI::DoDataExchange(CDataExchange* pDX)
 		DDX_Text(pDX, IDC_EDIT_ANS_D, m_pstSubjectCS->szAnswerD);
 	}
 
-	DDX_Control(pDX, IDC_STATIC_DURATION, m_staticDuration);
-	DDX_Control(pDX, IDC_STATIC_DUR_FLAG, m_staticDurFlag);
 }
 
 
@@ -113,6 +115,19 @@ void CSubjectUI::SetMode(E_STATUS eMode, SUBJECT_CST* pstSubjectCS, USER_ANSWER_
 
 void CSubjectUI::InitCtrl()
 {
+	//initialize chapter comboBox
+	CDBMgr dbMgr;
+	int nCnt = dbMgr.GetChapterCnt();
+
+	for (int i = 0; i < nCnt; i++)
+	{
+		TCHAR szName[MAX_USER_ACCOUNT_LEN] = { 0 };
+		TCHAR szAlias[MAX_USER_ACCOUNT_LEN] = { 0 };
+		dbMgr.GetChapterByID(i, szName, szAlias);
+		// insert into comboBox
+
+	}
+
 	if (!m_cbQustionType.GetSafeHwnd())
 		return;
 	m_cbQustionType.InsertString(QUESTION_TYPE_SELECTION, _T("Ñ¡ÔñÌâ"));

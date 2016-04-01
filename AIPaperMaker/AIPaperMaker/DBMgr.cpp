@@ -481,7 +481,6 @@ int CDBMgr::GetChapterByID(int nIdx, TCHAR *szChapterName, TCHAR *szChapterAlias
 	return nRet;
 }
 
-
 int CDBMgr::AddPaper(TCHAR * szPaperName, int nSubjectCnt, TCHAR * szSubjectIDList)
 {
 	CComnDBAMgr mgr;
@@ -584,8 +583,100 @@ int CDBMgr::GetPaperByID(int nIdx, TCHAR * szPaperName, int *pnSubjectCnt, TCHAR
 	return nRet;
 }
 
+int CDBMgr::AddUser(USER_T &stUser)
+{
+	CComnDBAMgr mgr;
+	int nRet = mgr.OpenDBA();
+	if (nRet != 0)
+	{
+		printf("AddUser(): open db failed\n");
+		return nRet;
+	}
 
+	TCHAR szSql[1024] = { 0 };
 
+	_stprintf_s(szSql, sizeof(szSql) / sizeof(szSql[0]),
+		_T("INSERT into user(account, pswd, alias, role) VALUES('%s', '%s', '%s', %d);"), stUser.szAccount, stUser.szPasswd, stUser.szAlias, (int)stUser.eRole);
+
+	nRet = mgr.ExcuteSQL(szSql);
+	if (nRet != 0)
+	{
+		printf("ExcuteSQL(): exec add user sql failed\n");
+	}
+
+	mgr.CloseDBA();
+
+	return nRet;
+}
+
+int CDBMgr::DeleteUserByAccount(TCHAR szAccount)
+{
+	CComnDBAMgr mgr;
+	int nRet = mgr.OpenDBA();
+	if (nRet != 0)
+	{
+		printf("DeleteUserByAccount(): open db failed\n");
+		return nRet;
+	}
+
+	TCHAR szSql[256] = { 0 };
+	_stprintf_s(szSql, sizeof(szSql) / sizeof(szSql[0]),
+		_T("delete  from user where account='%s' ;"), szAccount);
+
+	nRet = mgr.ExcuteSQL(szSql);
+	if (nRet != 0)
+	{
+		printf("ExcuteSQL(): delete user sql failed\n");
+	}
+
+	mgr.CloseDBA();
+
+	return nRet;
+}
+
+int CDBMgr::CheckUser(USER_T &stUser)
+{
+	CComnDBAMgr mgr;
+	TCHAR szPswdInDB[MAX_USER_ACCOUNT_LEN] = { 0 };
+	int nRet = mgr.OpenDBA();
+	if (nRet != 0)
+	{
+		printf("CheckUser(): open db failed\n");
+		return nRet;
+	}
+
+	TCHAR szSql[128] = { 0 };
+	_stprintf_s(szSql, sizeof(szSql) / sizeof(szSql[0]),
+		_T("select * from user where account='%s' ;"), stUser.szAccount);
+
+	mgr.InitSelectTask();
+	nRet = mgr.SelectSQL(szSql);
+	mgr.MoveToFirst();
+
+	if (nRet == 1)
+	{
+		int nSizeInWords = sizeof(stUser.szAlias) / sizeof(stUser.szAlias[0]);
+		stUser.eRole = (E_USER_ROLE)mgr.GetFieldAsInt32(_T("role"));
+		mgr.GetFieldAsString(_T("alias"), stUser.szAlias, nSizeInWords);
+		mgr.GetFieldAsString(_T("pswd"), szPswdInDB, nSizeInWords);
+	}
+	else
+	{
+		//用户名不存在，返回0
+		mgr.CloseDBA();
+		return nRet;
+	}
+
+	//校验密码，失败，返回-1
+	if (StrCmp(szPswdInDB, stUser.szPasswd) != 0)
+	{
+		nRet = -1;
+	}
+
+	mgr.CloseDBA();
+
+	return nRet;
+}
 
 ////
 int CDBMgr::AddTestQuestion()
@@ -603,3 +694,4 @@ int CDBMgr::AddTestQuestion()
 
 	return AddSubject(subject);
 }
+

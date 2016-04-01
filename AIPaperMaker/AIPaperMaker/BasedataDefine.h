@@ -51,7 +51,7 @@ typedef enum e_status
 
 typedef struct _user_t
 {
-	E_STATUS eRole;
+	E_USER_ROLE eRole;
 	TCHAR szAccount[MAX_USER_ACCOUNT_LEN];
 	TCHAR szAlias[MAX_USER_ACCOUNT_LEN];
 	TCHAR szPasswd[MAX_USER_ACCOUNT_LEN];
