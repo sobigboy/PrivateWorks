@@ -19,9 +19,12 @@ public:
 	*1.用户角色 2.用户账号 3.用户姓名 4.用户密码
 	*/
 	int AddUser(USER_T &stUser);
-	int DeleteUserByAccount(TCHAR szAccount);
+	int DeleteUserByAccount(TCHAR* szAccount);
 	int CheckUser(USER_T &stUser);
 	int GetUserCnt();
+	int GetUserByIdx(int nIdx, USER_T &stUser);
+	int ModifyUserByAccount(USER_T &stUser);
+
 
 	/*
 	* @ subject 题目

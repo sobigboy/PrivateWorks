@@ -624,7 +624,7 @@ int CDBMgr::AddUser(USER_T &stUser)
 	return nRet;
 }
 
-int CDBMgr::DeleteUserByAccount(TCHAR szAccount)
+int CDBMgr::DeleteUserByAccount(TCHAR* szAccount)
 {
 	CComnDBAMgr mgr;
 	int nRet = mgr.OpenDBA();
@@ -729,6 +729,74 @@ int CDBMgr::GetUserCnt()
 	return nRet;
 }
 
+int CDBMgr::GetUserByIdx(int nIdx, USER_T &stUser)
+{
+	CComnDBAMgr mgr;
+	int nRet = mgr.OpenDBA();
+	if (nRet != 0)
+	{
+		printf("GetUserByIdx(): open db failed\n");
+		return nRet;
+	}
+
+	TCHAR szSql[] = _T("select * from user");
+	mgr.InitSelectTask();
+	nRet = mgr.SelectSQL(szSql);
+
+	mgr.MoveToFirst();
+	for (int i = 0; i < nRet; i++)
+	{
+		if (i < nIdx)
+		{
+			mgr.MoveToNext();
+		}
+		else
+		{
+			//account, pswd, alias, role
+			tstring str;
+			mgr.GetFieldAsString(_T("account"), str);
+			StrCpy(stUser.szAccount, str.c_str());
+
+			mgr.GetFieldAsString(_T("pswd"), str);
+			StrCpy(stUser.szPasswd, str.c_str());
+
+			mgr.GetFieldAsString(_T("alias"), str);
+			StrCpy(stUser.szAlias, str.c_str());
+
+			stUser.eRole = (E_USER_ROLE)mgr.GetFieldAsInt32(_T("role"));
+			break;
+		}
+	}
+
+	mgr.CloseDBA();
+	return nRet;
+}
+
+int CDBMgr::ModifyUserByAccount(USER_T &stUser)
+{
+	CComnDBAMgr mgr;
+	int nRet = mgr.OpenDBA();
+	if (nRet != 0)
+	{
+		printf("ModifyUserByAccount(): open db failed\n");
+		return nRet;
+	}
+	//account, pswd, alias, role
+	TCHAR szSql[256] = { 0 };
+	_stprintf_s(szSql, sizeof(szSql) / sizeof(szSql[0]),
+		_T("update user set pswd='%s', alias='%s', role=%d where account='%s' ;"), stUser.szPasswd, stUser.szAlias, (int)stUser.eRole, stUser.szAccount);
+
+	nRet = mgr.ExcuteSQL(szSql);
+	if (nRet != 0)
+	{
+		printf("ExcuteSQL(): modify user sql failed\n");
+	}
+
+	mgr.CloseDBA();
+
+	return nRet;
+}
+
 int CDBMgr::InitializeAllTable()
 {
 	CreateTable_Subject();
@@ -739,4 +807,5 @@ int CDBMgr::InitializeAllTable()
 
 	return 0;
 }
+
 

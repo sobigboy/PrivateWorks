@@ -117,6 +117,7 @@ xcopy DBMgr\*.dll ..\Bin\$(Configuration) /s/y</Command>
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AddUserUI.h" />
     <ClInclude Include="AIPaperMaker.h" />
     <ClInclude Include="AIPaperMakerDlg.h" />
     <ClInclude Include="BasedataDefine.h" />
@@ -128,8 +129,10 @@ xcopy DBMgr\*.dll ..\Bin\$(Configuration) /s/y</Command>
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="SubjectUI.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="UserMgrUI.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AddUserUI.cpp" />
     <ClCompile Include="AIPaperMaker.cpp" />
     <ClCompile Include="AIPaperMakerDlg.cpp" />
     <ClCompile Include="DBMgr.cpp" />
@@ -140,6 +143,7 @@ xcopy DBMgr\*.dll ..\Bin\$(Configuration) /s/y</Command>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="SubjectUI.cpp" />
+    <ClCompile Include="UserMgrUI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="AIPaperMaker.rc" />

@@ -56,4 +56,6 @@ private:
 	int m_nCurSubjectIdx;
 	SUBJECT_CST* m_stSubjectList[MAX_ADD_SUBJECT_CNT];
 	USER_ANSWER_CST* m_stUserAnswerList[MAX_ANSWERQUESTION_CNT];
+public:
+	afx_msg void OnBnClickedBtnUsermgr();
 };

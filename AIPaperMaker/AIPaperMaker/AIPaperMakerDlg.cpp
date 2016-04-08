@@ -8,6 +8,7 @@
 #include "afxdialogex.h"
 #include "StatisticInfoUI.h"
 #include "LoginUI.h"
+#include "UserMgrUI.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -76,6 +77,7 @@ BEGIN_MESSAGE_MAP(CAIPaperMakerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_DISPLAY, &CAIPaperMakerDlg::OnBnClickedBtnDisplay)
 	ON_MESSAGE(WM_MESSAGE_COMMIT_PAPER, OnCommitPaper)
 	ON_WM_DESTROY()
+	ON_BN_CLICKED(IDC_BTN_USERMGR, &CAIPaperMakerDlg::OnBnClickedBtnUsermgr)
 END_MESSAGE_MAP()
 
 
@@ -415,4 +417,11 @@ int CAIPaperMakerDlg::AutoMakeDisplay()
 			nTotalCnt++;
 	}
 	return nMakeCnt;
+}
+
+
+void CAIPaperMakerDlg::OnBnClickedBtnUsermgr()
+{
+	CUserMgrUI ui;
+	ui.DoModal();
 }

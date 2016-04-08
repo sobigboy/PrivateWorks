@@ -57,6 +57,12 @@
     <ClInclude Include="StatisticInfoUI.h">
       <Filter>UI</Filter>
     </ClInclude>
+    <ClInclude Include="UserMgrUI.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="AddUserUI.h">
+      <Filter>UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AIPaperMaker.cpp">
@@ -78,6 +84,12 @@
       <Filter>UI</Filter>
     </ClCompile>
     <ClCompile Include="StatisticInfoUI.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UserMgrUI.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="AddUserUI.cpp">
       <Filter>UI</Filter>
     </ClCompile>
   </ItemGroup>

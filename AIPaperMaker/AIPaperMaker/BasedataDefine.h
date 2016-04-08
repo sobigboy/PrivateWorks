@@ -37,9 +37,11 @@ typedef struct _statistic_info
 
 typedef enum e_user_role
 {
+	role_start = -1,
 	role_admin = 0,
 	role_teacher,
-	role_student
+	role_student,
+	role_end
 }E_USER_ROLE;
 
 typedef enum e_status
@@ -55,6 +57,14 @@ typedef struct _user_t
 	TCHAR szAccount[MAX_USER_ACCOUNT_LEN];
 	TCHAR szAlias[MAX_USER_ACCOUNT_LEN];
 	TCHAR szPasswd[MAX_USER_ACCOUNT_LEN];
+
+	_user_t()
+	{
+		eRole = role_start;
+		ZeroMemory(szAccount, sizeof(szAccount));
+		ZeroMemory(szAlias, sizeof(szAlias));
+		ZeroMemory(szPasswd, sizeof(szPasswd));
+	}
 }USER_T;
 
 typedef struct _subject_cst
