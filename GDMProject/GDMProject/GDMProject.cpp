@@ -21,7 +21,11 @@ long Usage()
 {
 	InitializePrj();
 
-	m_gdm.MoveTo(200, 200);
+	m_gdm.MoveTo(100, 100);
+	Sleep(1000);
+	m_gdm.RightClick();
+	Sleep(1000);
+	m_gdm.MoveR(10, 5);
 	Sleep(1000);
 	m_gdm.LeftClick();
 
