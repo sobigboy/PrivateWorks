@@ -27,9 +27,6 @@
     <ClInclude Include="AIPaperMaker.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="AIPaperMakerDlg.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="stdafx.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -63,12 +60,12 @@
     <ClInclude Include="AddUserUI.h">
       <Filter>UI</Filter>
     </ClInclude>
+    <ClInclude Include="AIPaperMakerDlg.h">
+      <Filter>UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AIPaperMaker.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="AIPaperMakerDlg.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
@@ -90,6 +87,9 @@
       <Filter>UI</Filter>
     </ClCompile>
     <ClCompile Include="AddUserUI.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="AIPaperMakerDlg.cpp">
       <Filter>UI</Filter>
     </ClCompile>
   </ItemGroup>

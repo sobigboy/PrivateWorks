@@ -181,6 +181,28 @@ HCURSOR CAIPaperMakerDlg::OnQueryDragIcon()
 
 void CAIPaperMakerDlg::OnBnClickedBtnAnswer()
 {
+	USER_T user;
+	CLoginUI ui(&user);
+
+	if (IDOK != ui.DoModal())
+		return;
+
+	// 首先验证身份，学生才能答题
+	CDBMgr mgr;
+	int nRet = mgr.CheckUser(user);
+
+	if (nRet != 1)
+	{
+		AfxMessageBox(_T("用户名或密码错误！请重试"));
+		return;
+	}
+
+	if (user.eRole != role_student)
+	{
+		AfxMessageBox(_T("只有学生才能答题"));
+		return;
+	}
+
 	// 填空题题数
 	int nFillSubjectNum = 5;
 
@@ -190,8 +212,7 @@ void CAIPaperMakerDlg::OnBnClickedBtnAnswer()
 
 
 	// 验证数据库中题库数目
-	CDBMgr mgr;
-	int nRet = mgr.GetSubjectsCnt();
+	nRet = mgr.GetSubjectsCnt();
 	if (nRet < m_nExaminationQuestionCnt)
 	{
 		AfxMessageBox(_T("题库中题目偏少，无法完成智能组卷！"));
@@ -209,31 +230,59 @@ void CAIPaperMakerDlg::OnBnClickedBtnAnswer()
 
 void CAIPaperMakerDlg::OnBnClickedBtnAdd()
 {
-	// 首先验证身份，管理员/老师 才能添加题库
-	USER_T user ;
-	ZeroMemory(&user, sizeof(USER_T));
+	// 首先验证身份，老师 才能添加题库
+	USER_T user;
 	CLoginUI ui(&user);
 
-	if (IDOK == ui.DoModal())
+	if (IDOK != ui.DoModal())
+		return;
+
+	// 首先验证身份，老师 才能添加题库
+	CDBMgr mgr;
+	int nRet = mgr.CheckUser(user);
+
+	if (nRet != 1)
 	{
-		CDBMgr mgr;
-		if(mgr.CheckUser(user))
-		{
-			ClearLists();
-			SelectMode(e_add_subject);
-		}
-		else
-		{
-			AfxMessageBox(_T("身份验证失败"));
-		}
+		AfxMessageBox(_T("用户名或密码错误！请重试"));
+		return;
 	}
 
+	if (user.eRole != role_teacher)
+	{
+		AfxMessageBox(_T("只有老师 才能添加题库"));
+		return;
+	}
+	ClearLists();
+	SelectMode(e_add_subject);
 }
 
 void CAIPaperMakerDlg::OnBnClickedBtnDisplay()
 {
+	// 首先验证身份，老师 才能浏览题库
+	USER_T user;
+	CLoginUI ui(&user);
+
+	if (IDOK != ui.DoModal())
+		return;
+
+	// 首先验证身份，老师 才能浏览题库
+	CDBMgr mgr;
+	int nRet = mgr.CheckUser(user);
+
+	if (nRet != 1)
+	{
+		AfxMessageBox(_T("用户名或密码错误！请重试"));
+		return;
+	}
+
+	if (user.eRole != role_teacher)
+	{
+		AfxMessageBox(_T("只有老师 才能浏览题库"));
+		return;
+	}
+
 	ClearLists();
-	int nRet = AutoMakeDisplay();
+	nRet = AutoMakeDisplay();
 
 	if (nRet > 0)
 		SelectMode(e_display_subject);
@@ -422,6 +471,28 @@ int CAIPaperMakerDlg::AutoMakeDisplay()
 
 void CAIPaperMakerDlg::OnBnClickedBtnUsermgr()
 {
-	CUserMgrUI ui;
-	ui.DoModal();
+	USER_T user;
+	CLoginUI ui(&user);
+
+	if (IDOK != ui.DoModal())
+		return;
+
+	// 首先验证身份，管理员才能管理
+	CDBMgr mgr;
+	int nRet = mgr.CheckUser(user);
+
+	if (nRet != 1)
+	{
+		AfxMessageBox(_T("用户名或密码错误！请重试"));
+		return;
+	}
+
+	if (user.eRole != role_admin)
+	{
+		AfxMessageBox(_T("管理员才能管理"));
+		return;
+	}
+
+	CUserMgrUI UserMgrUI;
+	UserMgrUI.DoModal();
 }
