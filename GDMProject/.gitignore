@@ -1,0 +1,11 @@
+*.suo
+*.sdf
+*.aps
+*.tags
+*.tags_sorted_by_file
+*.opensdf
+*.user
+
+/Bin
+/Build
+/ipch
