@@ -74,6 +74,27 @@ long CGdmApp::InitializeDm()
 	// ªÒ»°◊¢≤·¬Î
 	std::string strRegCode = m_pdm->ReadIni("¥ÛƒÆ◊¢≤·¬Î", "RegCode", "config.ini");
 
+	// ◊¢≤·¥ÛƒÆ≤Âº˛
+	nRet = dm->Reg(strRegCode.c_str(), "");
+	if (nRet != 1)
+	{
+		printf("◊¢≤· ß∞‹£¨¥ÌŒÛ¬Î: %d°£\n", nRet);
+		CoUninitialize();
+		return 0;
+	}
+
+	// …Ë÷√◊÷ø‚
+	nRet = dm->SetDict(IDF_HAN_SMALL, TXF_HAN_SMALL);
+	nRet = dm->SetDict(IDF_HAN_LARGE, TXF_HAN_LARGE);
+	nRet = dm->SetDict(IDF_ABC_SMALL, TXF_ABC_SMALL);
+	nRet = dm->SetDict(IDF_OTHER, TXF_OTHER);
+	if (nRet != 1)
+	{
+		printf("…Ë÷√◊÷ø‚ ß∞‹°£\n");
+		CoUninitialize();
+		return 0;
+	}
+
 
 	return 0;
 }
