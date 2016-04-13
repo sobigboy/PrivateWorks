@@ -20,7 +20,13 @@ using namespace std;
 long Usage()
 {
 	CGdmApp* pApp = CGdmApp::GetInstance();
+	if(!pApp)
+	{
+		return -1;
+	}	
+	
 	m_gdm = pApp->GetDm();
+
 
 	m_gdm->MoveTo(100, 100);
 	Sleep(1000);

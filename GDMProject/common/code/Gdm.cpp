@@ -18,7 +18,11 @@ CGdmApp * CGdmApp::GetInstance()
 	if (NULL == m_pGdmApp)
 	{
 		m_pGdmApp = new CGdmApp;
-		m_pGdmApp->InitializeDm();
+	}
+
+	if(1 !=	m_pGdmApp->InitializeDm())
+	{
+		DestroyInstance();
 	}
 
 	return m_pGdmApp;

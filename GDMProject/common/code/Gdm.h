@@ -23,6 +23,7 @@
 	rename("DeleteFile", "DmDeleteFile") \
 	rename("MoveFile", "DmMoveFile") \
 	rename("GetCommandLine", "DmGetCommandLine") \
+	rename("StrStr", "DmStrStr") \
 	no_namespace
 
 
