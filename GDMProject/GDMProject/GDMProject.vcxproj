@@ -72,8 +72,7 @@ mkdir ..\Bin\$(Configuration)\file
 copy $(TargetPath) ..\Bin\$(Configuration)
 copy ..\common\3rd\dm\*.dll ..\Bin\$(Configuration)
 copy ..\common\3rd\logger\*.dll ..\Bin\$(Configuration)
-xcopy ..\common\file\* ..\Bin\$(Configuration)\file\ /s /y
-</Command>
+xcopy ..\common\file\* ..\Bin\$(Configuration)\file\ /s /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -101,8 +100,7 @@ mkdir ..\Bin\$(Configuration)\file
 copy $(TargetPath) ..\Bin\$(Configuration)
 copy ..\common\3rd\dm\*.dll ..\Bin\$(Configuration)
 copy ..\common\3rd\logger\*.dll ..\Bin\$(Configuration)
-xcopy ..\common\file\* ..\Bin\$(Configuration)\file\ /s /y
-</Command>
+xcopy ..\common\file\* ..\Bin\$(Configuration)\file\ /s /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

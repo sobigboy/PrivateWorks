@@ -36,9 +36,11 @@ void CGdmApp::DestroyInstance()
 
 long CGdmApp::InitializeDm()
 {
+	int nRet = 0;
 	if (m_pdm)
 		return 1;
 
+	WinExec("regsvr32 dm.dll /s", SW_HIDE);
 	CoInitialize(NULL);
 	CLSID clsid;
 	HRESULT hr = CLSIDFromProgID(OLESTR("dm.dmsoft"), &clsid);
@@ -62,7 +64,6 @@ long CGdmApp::InitializeDm()
 
 
 	// …Ë÷√»´æ÷ƒø¬º
-	int nRet = 0;
 	nRet = m_pdm->SetPath(GetGlobalPath((long)e_rgame_mhxy).c_str());
 	if (nRet != 1)
 	{
@@ -75,7 +76,7 @@ long CGdmApp::InitializeDm()
 	std::string strRegCode = m_pdm->ReadIni("¥ÛƒÆ◊¢≤·¬Î", "RegCode", "config.ini");
 
 	// ◊¢≤·¥ÛƒÆ≤Âº˛
-	nRet = dm->Reg(strRegCode.c_str(), "");
+	nRet = m_pdm->Reg(strRegCode.c_str(), "");
 	if (nRet != 1)
 	{
 		printf("◊¢≤· ß∞‹£¨¥ÌŒÛ¬Î: %d°£\n", nRet);
@@ -84,10 +85,10 @@ long CGdmApp::InitializeDm()
 	}
 
 	// …Ë÷√◊÷ø‚
-	nRet = dm->SetDict(IDF_HAN_SMALL, TXF_HAN_SMALL);
-	nRet = dm->SetDict(IDF_HAN_LARGE, TXF_HAN_LARGE);
-	nRet = dm->SetDict(IDF_ABC_SMALL, TXF_ABC_SMALL);
-	nRet = dm->SetDict(IDF_OTHER, TXF_OTHER);
+	nRet = m_pdm->SetDict(IDF_HAN_SMALL, TXF_HAN_SMALL);
+	nRet = m_pdm->SetDict(IDF_HAN_LARGE, TXF_HAN_LARGE);
+	nRet = m_pdm->SetDict(IDF_ABC_SMALL, TXF_ABC_SMALL);
+	nRet = m_pdm->SetDict(IDF_OTHER, TXF_OTHER);
 	if (nRet != 1)
 	{
 		printf("…Ë÷√◊÷ø‚ ß∞‹°£\n");
@@ -95,8 +96,7 @@ long CGdmApp::InitializeDm()
 		return 0;
 	}
 
-
-	return 0;
+	return 1;
 }
 
 long CGdmApp::UnInitializeDm()
@@ -114,12 +114,12 @@ Idmsoft* CGdmApp::GetDm()
 std::string GetGlobalPath(long lGameID)
 {
 	char szPath[MAX_PATH] = { 0 };
-	::GetModuleFileNameA(NULL, szPath, MAX_PATH);
+	::GetModuleFileName(NULL, szPath, MAX_PATH);
 	std::string strSubDir;
 	switch ((E_RGAME)lGameID)
 	{
 	case e_rgame_mhxy:
-		strSubDir = "\\file\\MHXY";
+		strSubDir = "..\\file\\MHXY";
 		break;
 	default:
 		assert(0);

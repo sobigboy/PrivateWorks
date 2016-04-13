@@ -24,7 +24,7 @@ long Usage()
 
 	m_gdm->MoveTo(100, 100);
 	Sleep(1000);
-// 	m_gdm->RightClick();
+ 	m_gdm->RightClick();
 	Sleep(1000);
 	m_gdm->MoveR(10, 5);
 	Sleep(1000);
@@ -33,8 +33,6 @@ long Usage()
 
 
 	CGdmApp::DestroyInstance();
-// 	pApp->DestroyInstance();
-
 	system("pause");
 	return 0;
 }
