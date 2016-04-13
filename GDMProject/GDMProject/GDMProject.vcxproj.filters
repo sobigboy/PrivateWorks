@@ -33,10 +33,10 @@
     <ClInclude Include="GDMProject.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="common\tstring.h">
+    <ClInclude Include="..\common\code\Gdm.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="common\Gdm.h">
+    <ClInclude Include="..\common\code\tstring.h">
       <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
@@ -47,7 +47,7 @@
     <ClCompile Include="GDMProject.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="common\Gdm.cpp">
+    <ClCompile Include="..\common\code\Gdm.cpp">
       <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>

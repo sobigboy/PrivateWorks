@@ -60,14 +60,20 @@ long CGdmApp::InitializeDm()
 	std::string strVersion = m_pdm->Ver();
 	printf("当前大漠插件版本为: %s\n", strVersion.c_str());
 
-// 	// 设置全局目录
-// 	nRet = m_pdm->SetPath(GetGlobalPath().c_str());
-// 	if (nRet != 1)
-// 	{
-// 		printf("设置全局路径失败。\n");
-// 		CoUninitialize();
-// 		return 0;
-// 	}
+
+	// 设置全局目录
+	int nRet = 0;
+	nRet = m_pdm->SetPath(GetGlobalPath().c_str());
+	if (nRet != 1)
+	{
+		printf("设置全局路径失败。\n");
+		CoUninitialize();
+		return 0;
+	}
+
+	// 获取注册码
+	std::string strRegCode = m_pdm->ReadIni("大漠注册码", "RegCode", "config.ini");
+
 
 	return 0;
 }
@@ -82,4 +88,12 @@ long CGdmApp::UnInitializeDm()
 Idmsoft* CGdmApp::GetDm()
 {
 	return m_pdm;
+}
+
+std::string GetGlobalPath(void)
+{
+	char szPath[MAX_PATH] = { 0 };
+	::GetModuleFileNameA(NULL, szPath, MAX_PATH);
+	::PathAppendA(szPath, "\\file");
+	return szPath;
 }

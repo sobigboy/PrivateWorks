@@ -16,20 +16,20 @@
 CWinApp theApp;
 
 using namespace std;
-#pragma comment(lib, "3rd/logger/Logger.lib")
+// #pragma comment(lib, "3rd/logger/Logger.lib")
 
 long Usage()
 {
 	CGdmApp* pApp = CGdmApp::GetInstance();
 	m_gdm = pApp->GetDm();
 
-// 	m_gdm->MoveTo(100, 100);
-// 	Sleep(1000);
+	m_gdm->MoveTo(100, 100);
+	Sleep(1000);
 // 	m_gdm->RightClick();
-// 	Sleep(1000);
-// 	m_gdm->MoveR(10, 5);
-// 	Sleep(1000);
-// 	m_gdm->LeftClick();
+	Sleep(1000);
+	m_gdm->MoveR(10, 5);
+	Sleep(1000);
+	m_gdm->LeftClick();
 
 
 

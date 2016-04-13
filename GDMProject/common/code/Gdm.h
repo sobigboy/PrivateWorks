@@ -1,8 +1,11 @@
 #pragma once
 
+#ifndef _GDM_H
+#define _GDM_H
+
 #include "Logger.h"
 
-#import "3rd/dm/dm.dll" \
+#import "../common/3rd/dm/dm.dll" \
 	rename("SetWindowText", "DmSetWindowText") \
 	rename("FindWindow", "DmFindWindow") \
 	rename("FindWindowEx", "DmFindWindowEx") \
@@ -36,3 +39,6 @@ private:
 	Idmsoft * m_pdm;
 };
 
+std::string GetGlobalPath(void);
+
+#endif
