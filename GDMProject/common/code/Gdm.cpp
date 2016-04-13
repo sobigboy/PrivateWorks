@@ -63,7 +63,7 @@ long CGdmApp::InitializeDm()
 
 	// 设置全局目录
 	int nRet = 0;
-	nRet = m_pdm->SetPath(GetGlobalPath().c_str());
+	nRet = m_pdm->SetPath(GetGlobalPath((long)e_rgame_mhxy).c_str());
 	if (nRet != 1)
 	{
 		printf("设置全局路径失败。\n");
@@ -90,10 +90,21 @@ Idmsoft* CGdmApp::GetDm()
 	return m_pdm;
 }
 
-std::string GetGlobalPath(void)
+std::string GetGlobalPath(long lGameID)
 {
 	char szPath[MAX_PATH] = { 0 };
 	::GetModuleFileNameA(NULL, szPath, MAX_PATH);
-	::PathAppendA(szPath, "\\file");
+	std::string strSubDir;
+	switch ((E_RGAME)lGameID)
+	{
+	case e_rgame_mhxy:
+		strSubDir = "\\file\\MHXY";
+		break;
+	default:
+		assert(0);
+		break;
+	}
+
+	::PathAppendA(szPath, strSubDir.c_str());
 	return szPath;
 }

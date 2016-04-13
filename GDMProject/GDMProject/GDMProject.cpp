@@ -16,7 +16,6 @@
 CWinApp theApp;
 
 using namespace std;
-// #pragma comment(lib, "3rd/logger/Logger.lib")
 
 long Usage()
 {

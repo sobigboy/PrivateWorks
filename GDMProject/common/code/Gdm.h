@@ -39,6 +39,13 @@ private:
 	Idmsoft * m_pdm;
 };
 
-std::string GetGlobalPath(void);
+typedef enum e_rgame
+{
+	e_rgame_start = -1,
+	e_rgame_mhxy,
+	e_rgame_end
+}E_RGAME;
+
+std::string GetGlobalPath(long lGameID);
 
 #endif
