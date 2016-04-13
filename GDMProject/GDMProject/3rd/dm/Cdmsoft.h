@@ -2183,7 +2183,17 @@ inline long InitDmDll(Cdmsoft* pdm)
 	CLSID clsid;
 
 	HRESULT hr = CLSIDFromProgID(OLESTR("dm.dmsoft"), &clsid);
+	
+	if (FAILED(hr))
+	{
+		printf("InitDmDll : CLSIDFromProgID Failed!\n Exit!!!\n");
+		return -1;
+	}
+	
 	pdm->CreateDispatch(clsid);
+
+	CString str = pdm->Ver();
+	printf("Init dm succeed [version:%s]\n", str.GetString());
 
 	return 0;
 }
@@ -2192,6 +2202,8 @@ inline long UnInitDmDll(Cdmsoft* pdm)
 {
 	pdm->DetachDispatch();
 	CoUninitialize();
+
+	printf("uninit dm succeed\n");
 
 	return 0;
 }
