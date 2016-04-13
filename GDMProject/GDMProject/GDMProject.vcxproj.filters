@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{ff8bf55a-4235-41d9-a3bd-3233559a2b7f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -30,6 +33,12 @@
     <ClInclude Include="GDMProject.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="common\tstring.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\Gdm.h">
+      <Filter>Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -37,6 +46,9 @@
     </ClCompile>
     <ClCompile Include="GDMProject.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="common\Gdm.cpp">
+      <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

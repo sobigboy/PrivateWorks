@@ -2,12 +2,11 @@
 
 #include "resource.h"
 
-#include "Cdmsoft.h"
-
+#include "Gdm.h"
 
 long InitializePrj();
 long DestoryPrj();
 
-Cdmsoft m_gdm;
+Idmsoft* m_gdm;
 
 

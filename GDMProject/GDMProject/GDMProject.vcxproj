@@ -58,22 +58,20 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_AFXDLL;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>.\;.\SDK\;.\3rd\dm\;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;.\common\;.\3rd\logger\;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>
-      </AdditionalLibraryDirectories>
-      <AdditionalDependencies>
-      </AdditionalDependencies>
+      <AdditionalLibraryDirectories>.\3rd\logger\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Logger.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>mkdir ..\Bin\$(Configuration)
 copy $(TargetPath) ..\Bin\$(Configuration)
 xcopy 3rd\dm\*.dll ..\Bin\$(Configuration) /s/y
 copy 3rd\dm\*.txt ..\Bin\$(Configuration)
-copy SDK\*.dll ..\Bin\$(Configuration)</Command>
+copy 3rd\logger\*.dll ..\Bin\$(Configuration)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -85,37 +83,37 @@ copy SDK\*.dll ..\Bin\$(Configuration)</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_AFXDLL;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>.\;.\SDK\;.\3rd\dm\;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;.\common\;.\3rd\logger\;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>
-      </AdditionalLibraryDirectories>
-      <AdditionalDependencies>
-      </AdditionalDependencies>
+      <AdditionalLibraryDirectories>.\3rd\logger\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Logger.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>mkdir ..\Bin\$(Configuration)
 copy $(TargetPath) ..\Bin\$(Configuration)
 xcopy 3rd\dm\*.dll ..\Bin\$(Configuration) /s/y
 copy 3rd\dm\*.txt ..\Bin\$(Configuration)
-copy SDK\*.dll ..\Bin\$(Configuration)</Command>
+copy 3rd\logger\*.dll ..\Bin\$(Configuration)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="common\Gdm.h" />
+    <ClInclude Include="common\tstring.h" />
     <ClInclude Include="GDMProject.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="tstring.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="common\Gdm.cpp" />
     <ClCompile Include="GDMProject.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
