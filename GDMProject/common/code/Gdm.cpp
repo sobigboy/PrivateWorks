@@ -125,6 +125,9 @@ std::string GetGlobalPath(long lGameID)
 	case e_rgame_mhxy:
 		strSubDir = "..\\file\\MHXY";
 		break;
+	case e_rgame_dnf:
+		strSubDir = "..\\file\\DNF";
+		break;
 	default:
 		assert(0);
 		break;

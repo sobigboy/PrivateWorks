@@ -120,6 +120,7 @@ typedef enum e_rgame
 {
 	e_rgame_start = -1,
 	e_rgame_mhxy,
+	e_rgame_dnf,
 	e_rgame_end
 }E_RGAME;
 
