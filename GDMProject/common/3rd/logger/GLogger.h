@@ -18,7 +18,7 @@ typedef struct _log_item_t
 
 #define	WM_LOGGER_LOGCHANGED		(WM_USER+1023)
 
-#ifdef LOGGER_EXPORTS
+#ifdef GLOGGER_EXPORTS
 #define LOGGER_API __declspec(dllexport)
 #else
 #define LOGGER_API __declspec(dllimport)

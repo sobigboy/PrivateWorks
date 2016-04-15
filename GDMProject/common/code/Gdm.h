@@ -13,7 +13,7 @@
 #include <stdarg.h>
 
 
-#include "Logger.h"
+#include "GLogger.h"
 
 #import "../common/3rd/dm/dm.dll" \
 	rename("SetWindowText", "DmSetWindowText") \
