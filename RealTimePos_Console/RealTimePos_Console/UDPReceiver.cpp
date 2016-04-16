@@ -6,14 +6,18 @@
 #define MAX_BUFFER_LEN	(512)
 #define RECV_MSG_LEN	(100)
 
+CUDPReceiver *CUDPReceiver ::m_pReceiver = NULL;
+
 CUDPReceiver::CUDPReceiver()
 {
 	m_hExit = NULL;
 	m_hStart = NULL;
 	m_hThread = NULL;
 	m_nLocalPort = LOCAL_PORT;
-	memset(m_szFlag, 0, sizeof(m_szFlag));
+	m_ullFlag = 0;
+	m_bIsRunning = false;
 	memset(&m_stPosition, 0, sizeof(m_stPosition));
+	// 	memset(m_szFlag, 0, sizeof(m_szFlag));
 
 }
 
@@ -56,13 +60,20 @@ long CUDPReceiver::UnInit()
 	CloseHandle(m_hExit);
 	m_hExit = NULL;
 	CloseHandle(m_hStart);
-	m_hStart;
+	m_hStart = NULL;
 	return 0;
 }
 
-long CUDPReceiver::SetFlag(const char * psz)
+// long CUDPReceiver::SetFlag(const char * psz)
+// {
+// 	strcpy_s(m_szFlag, psz);
+// 	return 0;
+// }
+
+long CUDPReceiver::SetFlag(unsigned long long ullFlag)
 {
-	strcpy_s(m_szFlag, psz);
+	m_ullFlag = ullFlag;
+
 	return 0;
 }
 
@@ -150,13 +161,54 @@ done:
 long CUDPReceiver::ParsePositionFromBuf(const unsigned char *buf, int buf_len, POSITION_INFO_T *presult)
 {
 	int ret = 0;
-// 	char szTemp[MAX_BUFFER_LEN] = { 0 };
-// 	strcpy_s(szTemp, buf_len, (const char*)buf);
-// 	szTemp[buf_len] = 0;
-
 
 	std::string str =(char*) buf;
 	printf("recv: %s\n", str.c_str());
+
+	char szPosFlag[8] = { 0 };
+// 	char szID[MAX_FLAG_LENGTH] = { 0 };
+	unsigned long long nID = 0;
+	float fXPos = 0.0f;
+	float fYPos = 0.0f;
+	float fZPos = 0.0f;
+	char szTemp[32] = { 0 };
+
 	
+	//$POS,54000567,278.8,569.0,0.0,0, 1460714161.947, 001, 002, 003
+	sscanf((const char*)buf, "$POS,%d,%f,%f,%f,%s", &nID, &fXPos, &fYPos, &fZPos, szTemp);
+
+	if (m_ullFlag == nID)
+	{
+		presult->ullFlag = nID;
+		presult->fX = fXPos;
+		presult->fY = fYPos;
+		presult->fZ = fZPos;
+
+		printf("ID:%I64d\t", nID);
+		printf("fXPos: %0.2f\t", fXPos);
+		printf("fYPos: %0.2f\t", fYPos);
+		printf("fZPos: %0.2f\t\n", fZPos);
+	}
+
 	return ret;
+}
+
+CUDPReceiver* CUDPReceiver::GetInstance()
+{
+	if (NULL == m_pReceiver)
+	{
+		m_pReceiver = new CUDPReceiver;
+	}
+
+	return m_pReceiver;
+}
+
+void CUDPReceiver::DestoryInstance()
+{
+	if (m_pReceiver)
+	{
+		m_pReceiver->UnInit();
+		delete(m_pReceiver);
+		m_pReceiver = NULL;
+	}
 }

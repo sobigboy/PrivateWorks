@@ -5,17 +5,19 @@
 
 typedef struct _position_info_t
 {
-	char szFlag[MAX_FLAG_LENGTH];
+	/*char szFlag[MAX_FLAG_LENGTH];*/
+	unsigned long long	 ullFlag;
 	float fX;
 	float fY;
 	float fZ;
 
 	_position_info_t* operator = (_position_info_t* p)
 	{
+		ullFlag = 0;
 		fX = p->fX;
 		fY = p->fY;
 		fZ = p->fZ;
-		strcpy_s(szFlag, p->szFlag);
+// 		strcpy_s(szFlag, p->szFlag);
 
 		return this;
 	}
@@ -26,12 +28,21 @@ class CUDPReceiver
 public:
 	CUDPReceiver();
 	virtual ~CUDPReceiver();
+	
+protected:
+	static CUDPReceiver* m_pReceiver;
+
+public:
+	static CUDPReceiver* GetInstance();
+	static void DestoryInstance();
 
 public:
 	long Init(unsigned short nLocalPort);
 	long UnInit();
 
-	long SetFlag(const char * psz);
+// 	long SetFlag(const char * psz);
+	long SetFlag(unsigned long long ullFlag);
+
 	long GetLastPostion(POSITION_INFO_T * pstPos);
 
 protected:
@@ -43,11 +54,14 @@ protected:
 private:
 	void* m_hStart;
 	void* m_hExit;
-	
 	void* m_hThread;
 
-	char m_szFlag[MAX_FLAG_LENGTH];
+	bool m_bIsRunning;
+
+// 	char m_szFlag[MAX_FLAG_LENGTH];
+	unsigned long long m_ullFlag;
 	POSITION_INFO_T m_stPosition;
 	unsigned short	m_nLocalPort;
+
 };
 
