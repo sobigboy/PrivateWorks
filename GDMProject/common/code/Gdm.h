@@ -90,7 +90,91 @@
 #define VK_Y 0x59
 #define VK_Z 0x5A
 
+
+#define LY_EXIT -1
+#define LY_SUCCESS -2
+#define LY_FAIL -3
+
+enum AppStatus
+{
+	NotRunning,
+	Running,
+	Paused
+};
+
+typedef struct tagYAOPRICEITEM
+{
+	long nPinMin;
+	long nPinMax;
+	long nPrice;
+}YAOPRICEITEM;
+
+typedef struct tagYAOPRICE
+{
+	std::string strName;
+	std::vector<YAOPRICEITEM> vecItems;
+	bool bAdjust;
+}YAOPRICE;
+
+typedef struct tagADJUSTPRICE
+{
+	long nMin;
+	long nMax;
+	long nPrice;
+}ADJUSTPRICE;
+
+typedef struct tagRESULTITEM
+{
+	long index;
+	long xPos;
+	long yPos;
+}RESULTITEM;
+
+typedef struct tagYAOINFO
+{
+	long nIndex;
+	long xPos;
+	long yPos;
+	long nPin;
+	bool bAdjust;
+	long nOriginalPrice;
+	std::string strPrice;
+	std::string strName;
+}YAOINFO;
+
+static std::string g_strShopName;
+static std::string g_strMouseX;
+static std::string g_strMouseY;
+static std::map<std::string, YAOPRICE> g_mapYaoPrice;
+static std::vector<ADJUSTPRICE> g_vecAdjustPrice;
+static std::vector<long> g_vecHwnd;
+static AppStatus g_appStatus = NotRunning;
+static HANDLE g_hEvent;
+static long g_nHwnd;
+static long g_nWidth;
+static long g_nHeight;
+static Idmsoft * g_pdm;
+
+
 std::string GetGlobalPath(long lGameID);
+void LeftClick(void);
+void RightClick(void);
+void DockMouse(void);
+
+void Alert(void);
+void StringSplit(std::string& s, std::string delim, std::vector<std::string>& ret);
+void WaitEvent(void);
+BOOL IsTerminates(void);
+std::string GetGamePosition();
+bool GetGameCoordinate(long& x, long& y);
+long GetPersonProperty();
+void MoveMouse(long x, long y);
+long FindString(long dict, long x, long y, long width, long height, std::string text, std::string color, double sim, long& xPos, long& yPos);
+long FindStringEx(long dict, long x, long y, long width, long height, std::string text, std::string color, double sim, std::vector<RESULTITEM>& vecResult);
+long CloseAllWindow(void);
+long CloseWindow(std::string title);
+void WaitForPersonStop(long seconds);
+long GetYaoInfo(std::map<std::string, std::vector<YAOINFO>>& mapYao, long index);
 
 class CGdmApp
 {
@@ -100,20 +184,23 @@ public:
 
 protected:
 	static CGdmApp *m_pGdmApp;
-
 public:	
 	static CGdmApp *GetInstance();
 	static void DestroyInstance();
 
+	void MonitorHotKey();
+
+
 	//先设计成单实例，后期根据业务修改
 	Idmsoft* GetDm();
+ 	void SetTaskCallBack(long(*pfnTaskCallBack)(void));
 
-protected:
+
 	long InitializeDm();
 	long UnInitializeDm();
 
-private:
-	Idmsoft * m_pdm;
+public:
+	long (*m_pfnTaskCallBack)(void);
 };
 
 typedef enum e_rgame
